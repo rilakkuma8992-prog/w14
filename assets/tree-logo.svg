@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 72" role="img" aria-labelledby="title">
+  <title id="title">Tree logo</title>
+  <defs>
+    <linearGradient id="leaf" x1="14" y1="9" x2="82" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#53B331"/>
+      <stop offset="0.52" stop-color="#079247"/>
+      <stop offset="1" stop-color="#00683B"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#leaf)" d="M17.7 47.2c-5.9-.8-10.2-5.1-10.2-10.8 0-4.8 3.1-8.8 7.8-10.3.7-7.5 7.1-13.2 14.9-13.2 1.6 0 3.2.2 4.7.7 4.1-4.1 9.8-6.6 16.2-6.6 10.7 0 19.7 7.1 22.1 16.8 7.4 1.7 12.9 8.1 12.9 15.6 0 8.8-7.5 16-16.8 16H21.8c-1.4 0-2.8-.1-4.1-.4v-7.8Z"/>
+  <path fill="#00733F" d="M41.2 50.7h12.6v13.1h19.4c2.1 0 3.8 1.5 3.8 3.3s-1.7 3.3-3.8 3.3H22c-2.1 0-3.8-1.5-3.8-3.3s1.7-3.3 3.8-3.3h19.2V50.7Z"/>
+  <path fill="#38A843" opacity=".65" d="M19.3 31.6c5.2-6.6 14.7-10.6 25.9-10.6 9.8 0 18.6 3.1 24.1 8.2-5.8-8.2-17.1-13.7-30-13.7-9.8 0-18.5 3.2-24 8.1-2.3 2-3.6 4.2-4 6.4 2.2-.3 4.8.3 8 1.6Z"/>
+</svg>

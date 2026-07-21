@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AML Buddy 互動原型 Demo</title>
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-area">
+      <div class="logo-slot">
+        <img src="./assets/tree-logo.svg" alt="OO銀行 xxxx Bank">
+        <span class="bank-text">
+          <span class="bank-name">OO銀行</span>
+          <span class="bank-name-en">xxxx Bank</span>
+        </span>
+      </div>
+      <div class="buddy-title">AML Buddy</div>
+    </div>
+
+    <div class="top-actions">
+      <div class="search-wrap" id="searchWrap">
+        <div class="search-box">
+          <input id="keywordSearch" class="keyword-search" type="search" placeholder="實質受益人" autocomplete="off">
+          <button class="search-icon-btn" type="button" aria-label="搜尋"></button>
+        </div>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+
+      <div class="language-switch" aria-label="語言切換">
+        <button class="language-option is-active" type="button" data-lang-option="zh">中</button>
+        <span aria-hidden="true">／</span>
+        <button class="language-option" type="button" data-lang-option="en">EN</button>
+        <span aria-hidden="true">／</span>
+        <button class="language-option" type="button" data-lang-option="ja">日</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="page-shell">
+  <div class="desktop-app" id="app"></div>
+  <footer class="page-footer-note" aria-label="頁面聲明">
+    <p>本頁面內容依據總行內規彙整，主要供海外分行／子行同仁參考，如遇當地規範另有規定，請以當地規範為準</p>
+    <p>共同開發：Stanley Liu、Cindy Liu、Leah Fu</p>
+  </footer>
+</main>
+
+<div id="modalLayer"></div>
+
+<script src="./js/data.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>
