@@ -1,0 +1,3284 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="application-name" content="AML Buddy Admin Demo">
+  <meta name="version" content="0.1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data:; connect-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>AML Buddy｜內容管理後台 Demo</title>
+  <style>
+    :root{
+      --navy-950:#071a2f;
+      --navy-900:#0b2545;
+      --navy-800:#123b68;
+      --navy-700:#17538a;
+      --blue-600:#2477be;
+      --blue-100:#e7f1fb;
+      --green-800:#155f3a;
+      --green-700:#23794c;
+      --green-600:#2e9360;
+      --green-100:#e9f6ee;
+      --green-50:#f5fbf7;
+      --orange-700:#c7610a;
+      --orange-600:#e47c16;
+      --orange-100:#fff0df;
+      --purple-700:#6243a6;
+      --purple-100:#f0ebfb;
+      --red-700:#a53e3e;
+      --red-100:#fdecec;
+      --yellow-700:#8c6811;
+      --yellow-100:#fff7d6;
+      --ink:#182633;
+      --muted:#687785;
+      --line:#dbe4eb;
+      --line-strong:#c4d1dc;
+      --surface:#ffffff;
+      --surface-soft:#f6f9fb;
+      --page:#eef3f7;
+      --shadow:0 14px 34px rgba(8,37,68,.09);
+      --shadow-soft:0 6px 18px rgba(8,37,68,.07);
+      --radius-lg:18px;
+      --radius-md:12px;
+      --radius-sm:9px;
+      --sidebar:248px;
+    }
+
+    *{box-sizing:border-box}
+    html{min-height:100%;background:var(--page)}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      background:var(--page);
+      font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+      outline:3px solid rgba(36,119,190,.25);
+      outline-offset:2px;
+    }
+    .hidden{display:none!important}
+    .app{min-height:100vh}
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+      width:var(--sidebar);
+      display:flex;
+      flex-direction:column;
+      color:#fff;
+      background:
+        radial-gradient(circle at 22% 8%,rgba(48,126,178,.28),transparent 30%),
+        linear-gradient(180deg,var(--navy-950),var(--navy-900) 54%,#0c2c4b);
+      z-index:20;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:24px 20px 20px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+    .brand-mark{
+      width:42px;height:42px;border-radius:12px;
+      display:grid;place-items:center;
+      color:#fff;background:linear-gradient(145deg,var(--green-600),#52ba7f);
+      box-shadow:0 8px 18px rgba(33,151,92,.24);
+      font-weight:900;font-size:19px;
+    }
+    .brand-title{font-weight:800;font-size:19px;letter-spacing:.01em}
+    .brand-sub{font-size:11px;opacity:.7;margin-top:3px;letter-spacing:.08em}
+    .nav{
+      padding:18px 12px;
+      display:flex;flex-direction:column;gap:7px;
+      flex:1;
+    }
+    .nav-label{
+      padding:7px 12px 4px;
+      font-size:11px;letter-spacing:.12em;
+      color:rgba(255,255,255,.52);
+    }
+    .nav-btn{
+      width:100%;border:0;border-radius:10px;
+      display:flex;align-items:center;gap:12px;
+      padding:11px 12px;
+      color:rgba(255,255,255,.78);
+      background:transparent;text-align:left;text-decoration:none;
+      transition:.18s ease;
+    }
+    .nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+    .nav-btn.is-active{
+      color:#fff;background:rgba(255,255,255,.14);
+      box-shadow:inset 3px 0 0 #59c98a;
+    }
+    .nav-icon{
+      width:28px;height:28px;border-radius:8px;
+      display:grid;place-items:center;
+      font-size:12px;font-weight:900;
+      background:rgba(255,255,255,.1);
+    }
+    .nav-btn.is-active .nav-icon{background:rgba(77,191,126,.3)}
+    .nav-text{font-size:14px;font-weight:650}
+    .nav-count{
+      margin-left:auto;
+      min-width:22px;height:22px;border-radius:999px;
+      display:grid;place-items:center;padding:0 6px;
+      font-size:11px;font-weight:800;
+      background:rgba(255,255,255,.12);
+    }
+    .sidebar-foot{padding:14px 16px 20px}
+    .demo-pill{
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:12px;padding:12px;
+      color:rgba(255,255,255,.76);
+      background:rgba(255,255,255,.06);
+      font-size:12px;line-height:1.55;
+    }
+    .demo-pill strong{display:block;color:#fff;font-size:12px;margin-bottom:3px}
+
+    .main{margin-left:var(--sidebar);min-height:100vh}
+    .topbar{
+      height:76px;
+      position:sticky;top:0;z-index:15;
+      display:flex;align-items:center;gap:18px;
+      padding:0 30px;
+      background:rgba(255,255,255,.94);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(12px);
+    }
+    .mobile-menu{display:none}
+    .page-heading{min-width:0}
+    .page-kicker{color:var(--muted);font-size:11px;letter-spacing:.08em}
+    .page-title{margin:2px 0 0;font-size:20px;line-height:1.2}
+    .top-spacer{flex:1}
+    .role-wrap{display:flex;align-items:center;gap:9px}
+    .role-wrap label{font-size:12px;color:var(--muted)}
+    .role-select{
+      min-width:146px;height:38px;
+      border:1px solid var(--line);border-radius:9px;
+      padding:0 34px 0 11px;background:#fff;color:var(--ink);
+    }
+    .avatar{
+      width:38px;height:38px;border-radius:50%;
+      display:grid;place-items:center;
+      color:#fff;background:linear-gradient(145deg,var(--navy-700),var(--blue-600));
+      font-size:12px;font-weight:800;
+    }
+    .content{padding:26px 30px 42px;max-width:1540px;margin:0 auto}
+    .notice{
+      display:flex;align-items:flex-start;gap:12px;
+      padding:12px 14px;margin-bottom:18px;
+      border:1px solid #efd9a6;border-radius:11px;
+      background:#fffaf0;color:#6d5215;
+      font-size:13px;line-height:1.55;
+    }
+    .notice-mark{
+      flex:0 0 24px;height:24px;border-radius:50%;
+      display:grid;place-items:center;background:#f3c95d;
+      color:#624b11;font-size:12px;font-weight:900;
+    }
+    .screen{display:none}
+    .screen.is-active{display:block}
+
+    .hero-panel{
+      border-radius:var(--radius-lg);
+      background:
+        linear-gradient(105deg,rgba(9,36,67,.98),rgba(18,77,118,.95)),
+        var(--navy-900);
+      color:#fff;padding:26px 28px;
+      display:flex;gap:24px;align-items:center;
+      box-shadow:var(--shadow);
+      overflow:hidden;position:relative;
+    }
+    .hero-panel::after{
+      content:"";
+      position:absolute;right:-70px;top:-100px;
+      width:300px;height:300px;border-radius:50%;
+      border:44px solid rgba(90,201,138,.11);
+    }
+    .hero-copy{position:relative;z-index:1;flex:1;max-width:720px}
+    .eyebrow{font-size:12px;letter-spacing:.12em;color:#9fd3b6;font-weight:800}
+    .hero-title{font-size:27px;margin:7px 0 8px}
+    .hero-text{margin:0;color:rgba(255,255,255,.72);font-size:14px;line-height:1.7}
+    .hero-actions{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap}
+
+    .btn{
+      min-height:39px;border-radius:9px;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      border:1px solid transparent;padding:0 15px;
+      font-weight:750;font-size:13px;
+      transition:.16s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{color:#fff;background:var(--green-600);box-shadow:0 7px 14px rgba(33,134,82,.18)}
+    .btn-primary:hover{background:var(--green-700)}
+    .btn-secondary{color:var(--navy-800);background:#fff;border-color:var(--line)}
+    .btn-secondary:hover{border-color:var(--blue-600);color:var(--blue-600)}
+    .btn-ghost{color:var(--muted);background:transparent;border-color:var(--line)}
+    .btn-danger-soft{color:var(--red-700);background:var(--red-100);border-color:#f4cece}
+    .btn-orange{color:#fff;background:var(--orange-600)}
+    .btn-sm{min-height:33px;padding:0 11px;font-size:12px}
+    .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+    .stats{
+      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;
+      margin:18px 0;
+    }
+    .stat{
+      padding:18px;border:1px solid var(--line);border-radius:14px;
+      background:var(--surface);box-shadow:var(--shadow-soft);
+    }
+    .stat-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:700}
+    .stat-icon{
+      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+      font-size:12px;font-weight:900;
+    }
+    .stat-icon.blue{color:var(--blue-600);background:var(--blue-100)}
+    .stat-icon.orange{color:var(--orange-700);background:var(--orange-100)}
+    .stat-icon.green{color:var(--green-700);background:var(--green-100)}
+    .stat-icon.purple{color:var(--purple-700);background:var(--purple-100)}
+    .stat-value{font-size:28px;font-weight:850;margin-top:10px}
+    .stat-note{font-size:11px;color:var(--muted);margin-top:4px}
+
+    .grid-2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.8fr);gap:18px}
+    .card{
+      background:var(--surface);border:1px solid var(--line);
+      border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);
+    }
+    .card-head{
+      min-height:60px;padding:14px 18px;
+      display:flex;align-items:center;gap:12px;
+      border-bottom:1px solid var(--line);
+    }
+    .card-title{font-size:15px;font-weight:800}
+    .card-sub{font-size:11px;color:var(--muted);margin-top:3px}
+    .card-head .spacer{flex:1}
+    .card-body{padding:18px}
+    .workflow{
+      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:8px;align-items:center;
+    }
+    .flow-step{
+      min-height:90px;padding:13px 11px;border-radius:12px;
+      border:1px solid var(--line);background:var(--surface-soft);
+      text-align:center;position:relative;
+    }
+    .flow-step:not(:last-child)::after{
+      content:"?";position:absolute;right:-8px;top:31px;
+      width:16px;height:24px;display:grid;place-items:center;
+      color:var(--line-strong);background:#fff;font-size:22px;z-index:2;
+    }
+    .flow-num{
+      width:27px;height:27px;margin:0 auto 7px;border-radius:50%;
+      display:grid;place-items:center;font-size:11px;font-weight:850;
+      color:var(--navy-700);background:var(--blue-100);
+    }
+    .flow-step:nth-child(2) .flow-num{color:var(--orange-700);background:var(--orange-100)}
+    .flow-step:nth-child(3) .flow-num{color:var(--green-700);background:var(--green-100)}
+    .flow-step:nth-child(4) .flow-num{color:var(--purple-700);background:var(--purple-100)}
+    .flow-title{font-size:12px;font-weight:800}
+    .flow-note{font-size:10px;color:var(--muted);line-height:1.45;margin-top:3px}
+
+    .activity{display:flex;flex-direction:column}
+    .activity-item{display:grid;grid-template-columns:9px 1fr auto;gap:11px;padding:11px 0;border-bottom:1px solid #edf1f4}
+    .activity-item:last-child{border-bottom:0}
+    .activity-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;background:var(--green-600)}
+    .activity-main{font-size:12px;line-height:1.5}
+    .activity-main strong{display:block;font-size:12px}
+    .activity-time{font-size:10px;color:var(--muted);white-space:nowrap}
+
+    .section-toolbar{
+      display:flex;align-items:center;gap:11px;flex-wrap:wrap;
+      margin-bottom:15px;
+    }
+    .section-intro{margin-right:auto}
+    .section-title{font-size:22px;margin:0 0 4px}
+    .section-desc{font-size:12px;color:var(--muted);margin:0}
+    .filterbar{
+      display:flex;gap:9px;align-items:center;flex-wrap:wrap;
+      padding:14px 16px;border-bottom:1px solid var(--line);
+      background:#fafcfd;
+    }
+    .search{
+      min-width:260px;flex:1;height:39px;
+      border:1px solid var(--line);border-radius:9px;
+      padding:0 12px;color:var(--ink);background:#fff;
+    }
+    .select{
+      height:39px;border:1px solid var(--line);border-radius:9px;
+      padding:0 34px 0 11px;background:#fff;color:var(--ink);
+    }
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:880px}
+    th{
+      padding:11px 14px;text-align:left;
+      color:var(--muted);background:#f7f9fb;
+      border-bottom:1px solid var(--line);
+      font-size:11px;letter-spacing:.03em;
+    }
+    td{
+      padding:14px;border-bottom:1px solid #edf1f4;
+      font-size:12px;vertical-align:middle;
+    }
+    tbody tr{transition:.14s ease}
+    tbody tr:hover{background:#f8fbfd}
+    tbody tr:last-child td{border-bottom:0}
+    .faq-id{font-family:ui-monospace,monospace;color:var(--muted);font-size:11px}
+    .question-cell{max-width:380px}
+    .question-text{font-weight:750;line-height:1.45}
+    .question-meta{font-size:10px;color:var(--muted);margin-top:4px}
+    .tag{
+      display:inline-flex;align-items:center;gap:5px;
+      min-height:25px;border-radius:999px;padding:2px 9px;
+      font-size:10px;font-weight:800;white-space:nowrap;
+    }
+    .tag.draft{color:#66717a;background:#edf1f4}
+    .tag.pending{color:var(--orange-700);background:var(--orange-100)}
+    .tag.approved{color:var(--blue-600);background:var(--blue-100)}
+    .tag.published{color:var(--green-700);background:var(--green-100)}
+    .tag.withdrawn{color:var(--red-700);background:var(--red-100)}
+    .tag.archived{color:var(--purple-700);background:var(--purple-100)}
+    .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+    .row-actions{display:flex;gap:6px}
+    .icon-btn{
+      width:34px;height:34px;border-radius:8px;border:1px solid var(--line);
+      display:grid;place-items:center;background:#fff;color:var(--muted);
+      font-size:11px;font-weight:850;
+    }
+    .icon-btn:hover{color:var(--blue-600);border-color:var(--blue-600)}
+    .empty{
+      padding:50px 20px;text-align:center;color:var(--muted);
+    }
+    .empty-mark{
+      width:52px;height:52px;border-radius:16px;margin:0 auto 12px;
+      display:grid;place-items:center;background:var(--surface-soft);
+      color:var(--navy-700);font-weight:900;
+    }
+
+    .review-list{display:flex;flex-direction:column;gap:13px}
+    .review-card{
+      display:grid;grid-template-columns:1fr auto;gap:15px;
+      border:1px solid var(--line);border-radius:14px;padding:17px;background:#fff;
+    }
+    .review-card:hover{border-color:#b8c9d8;box-shadow:var(--shadow-soft)}
+    .review-kicker{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    .review-title{font-size:15px;font-weight:800;margin-bottom:7px}
+    .review-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+    .review-actions{display:flex;align-items:center;gap:7px}
+
+    .editor-shell{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px}
+    .editor-main,.editor-side{display:flex;flex-direction:column;gap:16px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field.full{grid-column:1/-1}
+    .field label{font-size:11px;color:#52616d;font-weight:800}
+    .required::after{content:" *";color:var(--red-700)}
+    .input,.textarea{
+      width:100%;border:1px solid var(--line);border-radius:9px;
+      padding:10px 11px;background:#fff;color:var(--ink);
+      transition:.15s ease;
+    }
+    .input{height:41px}
+    .textarea{min-height:92px;resize:vertical;line-height:1.6}
+    .textarea.answer{min-height:132px}
+    .input:focus,.textarea:focus{border-color:var(--blue-600)}
+    .hint{font-size:10px;color:var(--muted);line-height:1.45}
+    .lang-tabs{display:flex;gap:6px;margin-bottom:14px}
+    .lang-tab{
+      border:1px solid var(--line);border-radius:8px;padding:7px 12px;
+      background:#fff;color:var(--muted);font-size:11px;font-weight:800;
+    }
+    .lang-tab.is-active{color:var(--navy-800);border-color:#94b4d0;background:var(--blue-100)}
+    .lang-panel{display:none}
+    .lang-panel.is-active{display:block}
+    .source-box{
+      padding:14px;border-radius:11px;background:var(--surface-soft);
+      border:1px dashed var(--line-strong);
+    }
+    .source-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+    .source-title{font-size:12px;font-weight:800}
+    .side-section{padding:16px}
+    .side-title{font-size:12px;font-weight:850;margin-bottom:12px}
+    .status-track{display:flex;flex-direction:column;gap:0}
+    .track-step{position:relative;display:grid;grid-template-columns:25px 1fr;gap:10px;padding-bottom:15px}
+    .track-step:not(:last-child)::before{
+      content:"";position:absolute;left:12px;top:25px;bottom:0;width:1px;background:var(--line);
+    }
+    .track-dot{
+      width:25px;height:25px;border-radius:50%;display:grid;place-items:center;
+      background:#edf1f4;color:#70808d;font-size:10px;font-weight:900;z-index:1;
+    }
+    .track-step.done .track-dot{color:#fff;background:var(--green-600)}
+    .track-step.current .track-dot{color:#fff;background:var(--orange-600);box-shadow:0 0 0 4px var(--orange-100)}
+    .track-name{font-size:11px;font-weight:800;padding-top:4px}
+    .track-note{font-size:9px;color:var(--muted);margin-top:2px}
+    .validation-list{display:flex;flex-direction:column;gap:8px}
+    .validation{
+      display:flex;align-items:flex-start;gap:8px;
+      font-size:10px;color:var(--muted);line-height:1.45;
+    }
+    .validation-dot{
+      width:17px;height:17px;border-radius:50%;flex:0 0 17px;
+      display:grid;place-items:center;background:var(--green-100);color:var(--green-700);font-size:9px;font-weight:900;
+    }
+    .validation.warn .validation-dot{background:var(--yellow-100);color:var(--yellow-700)}
+    .editor-actions{
+      position:sticky;bottom:0;z-index:5;
+      display:flex;align-items:center;gap:9px;
+      padding:13px 16px;border-top:1px solid var(--line);
+      background:rgba(255,255,255,.96);backdrop-filter:blur(8px);
+    }
+    .editor-actions .spacer{flex:1}
+
+    .version-list{display:flex;flex-direction:column}
+    .version-item{
+      display:grid;grid-template-columns:60px 1fr auto;gap:12px;
+      padding:14px 0;border-bottom:1px solid #edf1f4;align-items:center;
+    }
+    .version-item:last-child{border-bottom:0}
+    .version-badge{
+      height:31px;border-radius:8px;display:grid;place-items:center;
+      background:var(--purple-100);color:var(--purple-700);
+      font-size:11px;font-weight:850;
+    }
+    .version-title{font-size:12px;font-weight:750}
+    .version-meta{font-size:10px;color:var(--muted);margin-top:4px}
+    .audit-table td:first-child{white-space:nowrap;color:var(--muted)}
+
+    .modal-layer{position:fixed;inset:0;z-index:100;display:none}
+    .modal-layer.is-open{display:block}
+    .modal-mask{
+      position:absolute;inset:0;background:rgba(5,21,38,.58);
+      backdrop-filter:blur(3px);
+    }
+    .modal{
+      position:relative;margin:5vh auto 0;
+      width:min(760px,calc(100% - 30px));max-height:90vh;
+      background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.24);
+      overflow:auto;
+    }
+    .modal.wide{width:min(980px,calc(100% - 30px))}
+    .modal-head{
+      position:sticky;top:0;z-index:2;
+      min-height:64px;padding:15px 19px;display:flex;align-items:center;gap:12px;
+      background:#fff;border-bottom:1px solid var(--line);
+    }
+    .modal-title{font-size:16px;font-weight:850}
+    .modal-head .spacer{flex:1}
+    .modal-close{
+      width:35px;height:35px;border:1px solid var(--line);
+      border-radius:9px;background:#fff;color:var(--muted);font-size:18px;
+    }
+    .modal-body{padding:20px}
+    .modal-foot{
+      position:sticky;bottom:0;
+      min-height:64px;padding:12px 19px;
+      display:flex;justify-content:flex-end;gap:9px;
+      border-top:1px solid var(--line);background:#fff;
+    }
+    .preview-frame{
+      border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;
+    }
+    .preview-top{
+      padding:15px 18px;color:#fff;
+      background:linear-gradient(100deg,#dcebd8,#afdcbc);
+    }
+    .preview-brand{font-size:13px;color:var(--green-800);font-weight:900}
+    .preview-content{display:grid;grid-template-columns:220px 1fr;min-height:360px}
+    .preview-nav{padding:17px;background:var(--green-50);border-right:1px solid var(--line)}
+    .preview-nav-title{font-size:11px;color:var(--muted);font-weight:800;margin-bottom:10px}
+    .preview-nav-item{padding:9px 10px;margin-bottom:6px;border-radius:8px;background:#fff;border:1px solid var(--line);font-size:11px}
+    .preview-nav-item.active{color:var(--green-800);border-color:#82bd99;background:var(--green-100);font-weight:800}
+    .preview-answer{padding:24px}
+    .preview-status{font-size:10px;color:var(--green-700);font-weight:850;letter-spacing:.08em}
+    .preview-question{font-size:20px;line-height:1.45;margin:8px 0 17px}
+    .preview-answer-box{padding:16px;border-radius:11px;background:#fffbea;border:1px solid #efe5ae;line-height:1.75;font-size:13px}
+    .preview-ref{margin-top:14px;padding:13px;border-radius:10px;background:var(--surface-soft);font-size:11px;line-height:1.6}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .compare-col{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .compare-head{padding:11px 13px;background:var(--surface-soft);font-size:11px;font-weight:850}
+    .compare-body{padding:14px;font-size:12px;line-height:1.65;white-space:pre-line}
+    .diff-remove{background:#fde9e9;color:#8c3838;text-decoration:line-through}
+    .diff-add{background:#e3f6e9;color:#17653b}
+    .toast{
+      position:fixed;right:24px;bottom:24px;z-index:200;
+      min-width:270px;max-width:380px;
+      display:flex;align-items:flex-start;gap:11px;
+      padding:14px 16px;border-radius:12px;
+      color:#fff;background:var(--navy-900);box-shadow:0 16px 38px rgba(0,0,0,.22);
+      opacity:0;transform:translateY(15px);pointer-events:none;
+      transition:.22s ease;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast-mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--green-600);font-size:11px;font-weight:900}
+    .toast-title{font-size:12px;font-weight:850}
+    .toast-text{font-size:10px;color:rgba(255,255,255,.7);margin-top:3px}
+
+    @media (max-width:1120px){
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .grid-2,.editor-shell{grid-template-columns:1fr}
+      .editor-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width:800px){
+      :root{--sidebar:0px}
+      .sidebar{transform:translateX(-100%);transition:.22s ease;width:248px}
+      .sidebar.is-open{transform:translateX(0)}
+      .main{margin-left:0}
+      .mobile-menu{
+        display:grid;place-items:center;width:38px;height:38px;
+        border:1px solid var(--line);border-radius:9px;background:#fff;
+      }
+      .topbar{height:68px;padding:0 16px}
+      .content{padding:18px 15px 32px}
+      .role-wrap label{display:none}
+      .role-select{min-width:125px}
+      .hero-panel{align-items:flex-start;flex-direction:column;padding:22px}
+      .workflow{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .flow-step:nth-child(2)::after{display:none}
+      .form-grid{grid-template-columns:1fr}
+      .field.full{grid-column:auto}
+      .editor-side{grid-template-columns:1fr}
+      .review-card{grid-template-columns:1fr}
+      .review-actions{justify-content:flex-start}
+      .preview-content{grid-template-columns:1fr}
+      .preview-nav{display:none}
+      .compare-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:520px){
+      .topbar{gap:9px}
+      .page-kicker,.avatar{display:none}
+      .page-title{font-size:16px}
+      .role-select{min-width:108px;width:108px}
+      .stats{grid-template-columns:1fr 1fr;gap:10px}
+      .stat{padding:14px}
+      .stat-value{font-size:23px}
+      .workflow{grid-template-columns:1fr}
+      .flow-step:not(:last-child)::after{display:none}
+      .section-toolbar{align-items:flex-start}
+      .section-intro{width:100%}
+      .filterbar{align-items:stretch}
+      .search,.select{width:100%;min-width:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="主要選單">
+      <div class="brand">
+        <div class="brand-mark">AB</div>
+        <div>
+          <div class="brand-title">AML Buddy</div>
+          <div class="brand-sub">CONTENT ADMIN</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <div class="nav-label">內容管理</div>
+        <button class="nav-btn is-active" type="button" data-screen="dashboard">
+          <span class="nav-icon">01</span><span class="nav-text">總覽儀表板</span>
+        </button>
+        <button class="nav-btn" type="button" data-screen="content">
+          <span class="nav-icon">02</span><span class="nav-text">FAQ 內容管理</span>
+          <span class="nav-count" id="navContentCount">6</span>
+        </button>
+        <button class="nav-btn" type="button" data-screen="review">
+          <span class="nav-icon">03</span><span class="nav-text">待審佇列</span>
+          <span class="nav-count" id="navReviewCount">2</span>
+        </button>
+        <button class="nav-btn" type="button" data-screen="versions">
+          <span class="nav-icon">04</span><span class="nav-text">版本與操作紀錄</span>
+        </button>
+        <div class="nav-label">系統</div>
+        <button class="nav-btn" type="button" data-action="show-permission">
+          <span class="nav-icon">05</span><span class="nav-text">角色與權限</span>
+        </button>
+        <button class="nav-btn" type="button" data-action="reset-demo">
+          <span class="nav-icon">?</span><span class="nav-text">重設示範資料</span>
+        </button>
+        <a class="nav-btn" href="./index.html" target="_self">
+          <span class="nav-icon">↗</span><span class="nav-text">開啟前台</span>
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="demo-pill">
+          <strong>SYNTHETIC DEMO</strong>
+          本頁僅使用虛構內容，不連接行內系統或外部服務。
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" type="button" aria-label="開啟選單">?</button>
+        <div class="page-heading">
+          <div class="page-kicker">AML 知識管理與問答平台</div>
+          <h1 class="page-title" id="pageTitle">內容治理總覽</h1>
+        </div>
+        <div class="top-spacer"></div>
+        <div class="role-wrap">
+          <label for="roleSelect">展示角色</label>
+          <select class="role-select" id="roleSelect">
+            <option value="editor">Editor｜編輯者</option>
+            <option value="reviewer">Reviewer｜覆核者</option>
+            <option value="admin">Administrator｜管理者</option>
+          </select>
+        </div>
+        <div class="avatar" aria-label="目前使用者">ST</div>
+      </header>
+
+      <div class="content">
+        <div class="notice">
+          <span class="notice-mark">!</span>
+          <div><strong>實驗版：</strong>所有 FAQ、法規名稱、人員與操作紀錄均為虛構資料；不得作為真實案件判斷或正式內規依據。</div>
+        </div>
+
+        <section class="screen is-active" id="screen-dashboard">
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <div class="eyebrow">AML BUDDY CONTENT GOVERNANCE</div>
+              <h2 class="hero-title">讓每一則答案，都有來源、版本與審核軌跡</h2>
+              <p class="hero-text">本後台示範如何將現有前台的 FAQ 題庫，轉為可新增、送審、核准、發布與追蹤版本的內容治理流程。</p>
+            </div>
+            <div class="hero-actions">
+              <button class="btn btn-primary" type="button" data-action="new-faq">＋ 新增 FAQ</button>
+              <button class="btn btn-secondary" type="button" data-screen="review">查看待審內容</button>
+            </div>
+          </div>
+
+          <div class="stats" id="stats"></div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">內容發布流程</div>
+                  <div class="card-sub">前台只讀取 Published 版本；所有異動均留下操作紀錄</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="workflow">
+                  <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-title">建立草稿</div>
+                    <div class="flow-note">Editor 編輯問題、答案與來源</div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-title">送交覆核</div>
+                    <div class="flow-note">鎖定版本並建立審核任務</div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-title">核准內容</div>
+                    <div class="flow-note">Reviewer 確認內容與法規來源</div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-title">正式發布</div>
+                    <div class="flow-note">唯讀 API 提供前台查詢</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">最近操作</div>
+                  <div class="card-sub">完整保留人員、時間與動作</div>
+                </div>
+                <div class="spacer"></div>
+                <button class="btn btn-ghost btn-sm" type="button" data-screen="versions">查看全部</button>
+              </div>
+              <div class="card-body">
+                <div class="activity" id="recentActivity"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-content">
+          <div class="section-toolbar">
+            <div class="section-intro">
+              <h2 class="section-title">FAQ 內容管理</h2>
+              <p class="section-desc">集中管理問題、答案、法規引用、語言版本與發布狀態。</p>
+            </div>
+            <button class="btn btn-primary" type="button" data-action="new-faq">＋ 新增 FAQ</button>
+          </div>
+          <div class="card">
+            <div class="filterbar">
+              <input class="search" id="faqSearch" type="search" placeholder="搜尋問題、答案、來源或編號" aria-label="搜尋 FAQ">
+              <select class="select" id="statusFilter" aria-label="篩選狀態">
+                <option value="">全部狀態</option>
+                <option value="draft">草稿</option>
+                <option value="pending">待審</option>
+                <option value="approved">已核准</option>
+                <option value="published">已發布</option>
+                <option value="withdrawn">已下架</option>
+              </select>
+              <select class="select" id="bizFilter" aria-label="篩選業務別">
+                <option value="">全部業務別</option>
+                <option value="企金">企金</option>
+                <option value="消金">消金</option>
+                <option value="企金／消金">企金／消金共用</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>編號</th>
+                    <th>問題與分類</th>
+                    <th>業務別</th>
+                    <th>內容負責人</th>
+                    <th>最後更新</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="faqTableBody"></tbody>
+              </table>
+              <div class="empty hidden" id="faqEmpty">
+                <div class="empty-mark">?</div>
+                查無符合條件的 FAQ
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-review">
+          <div class="section-toolbar">
+            <div class="section-intro">
+              <h2 class="section-title">待審佇列</h2>
+              <p class="section-desc">覆核內容正確性、引用依據與前台顯示效果。</p>
+            </div>
+          </div>
+          <div class="review-list" id="reviewList"></div>
+          <div class="empty card hidden" id="reviewEmpty">
+            <div class="empty-mark">?</div>
+            目前沒有待審內容
+          </div>
+        </section>
+
+        <section class="screen" id="screen-editor">
+          <div class="section-toolbar">
+            <div class="section-intro">
+              <h2 class="section-title" id="editorTitle">新增 FAQ</h2>
+              <p class="section-desc" id="editorSub">建立問題、答案與法規引用，完成後送交覆核。</p>
+            </div>
+            <button class="btn btn-secondary" type="button" id="previewFaqBtn">前台預覽</button>
+          </div>
+          <div class="editor-shell">
+            <div class="editor-main">
+              <div class="card">
+                <div class="card-head">
+                  <div>
+                    <div class="card-title">基本資訊</div>
+                    <div class="card-sub">欄位結構直接對應現有 AML Buddy 前台題庫</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label class="required" for="editBiz">業務別</label>
+                      <select class="input" id="editBiz">
+                        <option value="企金">企金｜Corporate Banking</option>
+                        <option value="消金">消金｜Consumer Banking</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="required" for="editAspect">內容面向</label>
+                      <select class="input" id="editAspect">
+                        <option value="法規面">法規面｜Regulatory</option>
+                        <option value="實務面">實務面｜Operational</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="required" for="editCategory">主題分類</label>
+                      <select class="input" id="editCategory">
+                        <option value="KYC/CDD">KYC/CDD</option>
+                        <option value="Customer Risk Rating">Customer Risk Rating</option>
+                        <option value="Sanctions/Screening">Sanctions/Screening</option>
+                        <option value="STR/SAR">STR/SAR</option>
+                        <option value="Record Keeping">Record Keeping</option>
+                        <option value="Governance/Reporting">Governance/Reporting</option>
+                        <option value="Training">Training</option>
+                        <option value="System/Data">System/Data</option>
+                        <option value="Others">Others</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="required" for="editOwner">內容負責人</label>
+                      <input class="input" id="editOwner" value="王小明｜AML 政策科">
+                    </div>
+                    <div class="field">
+                      <label for="editEffective">內容生效日</label>
+                      <input class="input" id="editEffective" type="date" value="2026-07-27">
+                    </div>
+                    <div class="field">
+                      <label class="required" for="editReview">下次檢視日</label>
+                      <input class="input" id="editReview" type="date" value="2027-07-27">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div>
+                    <div class="card-title">多語內容</div>
+                    <div class="card-sub">中文為必要欄位；英文與日文可於後續版本補充</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="lang-tabs">
+                    <button class="lang-tab is-active" type="button" data-lang-tab="zh">中文</button>
+                    <button class="lang-tab" type="button" data-lang-tab="en">English</button>
+                    <button class="lang-tab" type="button" data-lang-tab="ja">日本語</button>
+                  </div>
+                  <div class="lang-panel is-active" data-lang-panel="zh">
+                    <div class="field">
+                      <label class="required" for="editQzh">問題</label>
+                      <textarea class="textarea" id="editQzh" placeholder="請以使用者會實際搜尋的方式撰寫問題"></textarea>
+                    </div>
+                    <div class="field" style="margin-top:13px">
+                      <label class="required" for="editAzh">答案</label>
+                      <textarea class="textarea answer" id="editAzh" placeholder="請提供明確、可執行且經核准的說明"></textarea>
+                    </div>
+                    <div class="field" style="margin-top:13px">
+                      <label class="required" for="editRzh">引用文字</label>
+                      <textarea class="textarea" id="editRzh" placeholder="例如：OO銀行客戶審查作業辦法 第8條"></textarea>
+                    </div>
+                  </div>
+                  <div class="lang-panel" data-lang-panel="en">
+                    <div class="field">
+                      <label for="editQen">Question</label>
+                      <textarea class="textarea" id="editQen"></textarea>
+                    </div>
+                    <div class="field" style="margin-top:13px">
+                      <label for="editAen">Answer</label>
+                      <textarea class="textarea answer" id="editAen"></textarea>
+                    </div>
+                    <div class="field" style="margin-top:13px">
+                      <label for="editRen">Reference</label>
+                      <textarea class="textarea" id="editRen"></textarea>
+                    </div>
+                  </div>
+                  <div class="lang-panel" data-lang-panel="ja">
+                    <div class="field">
+                      <label for="editQja">質問</label>
+                      <textarea class="textarea" id="editQja"></textarea>
+                    </div>
+                    <div class="field" style="margin-top:13px">
+                      <label for="editAja">回答</label>
+                      <textarea class="textarea answer" id="editAja"></textarea>
+                    </div>
+                    <div class="field" style="margin-top:13px">
+                      <label for="editRja">?照</label>
+                      <textarea class="textarea" id="editRja"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div>
+                    <div class="card-title">正式來源文件</div>
+                    <div class="card-sub">FAQ 為經核准的解說內容，正式內規文件仍是唯一權威來源</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="source-box">
+                    <div class="source-head">
+                      <div class="source-title">文件連結與版本參照</div>
+                      <span class="tag approved">已驗證格式</span>
+                    </div>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label class="required" for="editSource">文件名稱</label>
+                        <input class="input" id="editSource" placeholder="OO銀行客戶審查作業辦法">
+                      </div>
+                      <div class="field">
+                        <label class="required" for="editArticle">條次／章節</label>
+                        <input class="input" id="editArticle" placeholder="第8條">
+                      </div>
+                      <div class="field full">
+                        <label for="editLink">行內正式文件連結</label>
+                        <input class="input" id="editLink" placeholder="https://intranet.example/policy/...">
+                        <div class="hint">Demo 不會開啟或驗證連結；正式版本應由行內文件管理系統提供。</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="editor-actions">
+                  <button class="btn btn-ghost" type="button" data-screen="content">取消</button>
+                  <div class="spacer"></div>
+                  <button class="btn btn-secondary" type="button" id="saveDraftBtn">儲存草稿</button>
+                  <button class="btn btn-orange" type="button" id="submitReviewBtn">送交覆核</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="editor-side">
+              <div class="card">
+                <div class="side-section">
+                  <div class="side-title">目前流程狀態</div>
+                  <div class="status-track" id="statusTrack"></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="side-section">
+                  <div class="side-title">發布前檢核</div>
+                  <div class="validation-list">
+                    <div class="validation"><span class="validation-dot">?</span><span>業務別、面向與分類已建立對應關係</span></div>
+                    <div class="validation"><span class="validation-dot">?</span><span>前台僅讀取已發布版本</span></div>
+                    <div class="validation warn"><span class="validation-dot">!</span><span>中文問題、答案與正式來源為必填</span></div>
+                    <div class="validation warn"><span class="validation-dot">!</span><span>建立者不得自行核准其內容</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="side-section">
+                  <div class="side-title">版本資訊</div>
+                  <div style="font-size:11px;line-height:1.8;color:var(--muted)">
+                    <div>FAQ 編號：<strong id="editIdLabel" style="color:var(--ink)">新增後產生</strong></div>
+                    <div>目前版本：<strong id="editVersionLabel" style="color:var(--ink)">v0.1</strong></div>
+                    <div>建立者：<strong style="color:var(--ink)">Stanley（Demo）</strong></div>
+                    <div>最後更新：<strong id="editUpdatedLabel" style="color:var(--ink)">尚未儲存</strong></div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-versions">
+          <div class="section-toolbar">
+            <div class="section-intro">
+              <h2 class="section-title">版本與操作紀錄</h2>
+              <p class="section-desc">每次內容修改、送審、核准、發布與下架皆可追溯。</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">FAQ 版本紀錄</div>
+                  <div class="card-sub">以版本為單位保留核准內容與異動摘要</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="version-list" id="versionList"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">稽核軌跡</div>
+                  <div class="card-sub">不可由一般內容編輯者覆寫</div>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="audit-table" style="min-width:620px">
+                  <thead><tr><th>時間</th><th>使用者</th><th>動作</th><th>對象</th></tr></thead>
+                  <tbody id="auditBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-layer" id="modalLayer" aria-hidden="true">
+    <div class="modal-mask" data-action="close-modal"></div>
+    <div class="modal" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">視窗</div>
+        <div class="spacer"></div>
+        <button class="modal-close" type="button" data-action="close-modal" aria-label="關閉">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot" id="modalFoot"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <div class="toast-mark">?</div>
+    <div><div class="toast-title" id="toastTitle"></div><div class="toast-text" id="toastText"></div></div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "amlBuddyAdminOfficialFaqs.v2";
+    const HAS_DYNAMIC_API = location.protocol === "file:" || ["localhost","127.0.0.1"].includes(location.hostname);
+    const API_BASE = location.protocol === "file:" ? "http://127.0.0.1:"+(location.port || "3000") : "";
+    const API_FAQS_URL = API_BASE + "/api/faqs";
+    const todayText = (() => {
+      const date = new Date();
+      const pad = n => String(n).padStart(2,"0");
+      return date.getFullYear()+"-"+pad(date.getMonth()+1)+"-"+pad(date.getDate());
+    })();
+    const STATUS = {
+      draft:{label:"草稿",cls:"draft"},
+      pending:{label:"待審",cls:"pending"},
+      approved:{label:"已核准",cls:"approved"},
+      published:{label:"已發布",cls:"published"},
+      withdrawn:{label:"已下架",cls:"withdrawn"},
+      archived:{label:"已封存",cls:"archived"}
+    };
+    const SCREEN_TITLES = {
+      dashboard:"內容治理總覽",
+      content:"FAQ 內容管理",
+      review:"待審佇列",
+      editor:"FAQ 編輯器",
+      versions:"版本與操作紀錄"
+    };
+
+    const seedData = {
+    "faqs":  [
+                 {
+                     "id":  "FAQ-001",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-07-28",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如何判斷非自然人客戶的實質受益人（UBO）？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "應依「客戶洗錢與資恐風險評估暨審查細則」附件一辦理：\n1. 辨識直接或間接持股超過25%之自然人。\n2. 若無符合前述條件者，辨識是否存在其他控制權人。\n3. 仍無法辨識時，以高階管理人作為辨識對象。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第10條、附件一",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第10條、附件一",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-002",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "總行規定高風險、中風險及低風險客戶多久要做一次定期審查？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "高風險：最少1年一次\n中風險：最少3年一次\n低風險：最少7年一次\n且應提前展開定審作業，並於到期前完成。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第20條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第20條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-003",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些情況下客戶屬於本行禁止往來客戶？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "例如：\n－UN、OFAC、EU制裁名單對象\n－禁止往來國家人士\n－官方拒絕名單\n－本行拒絕名單\n－涉及恐怖活動或恐怖組織\n－空殼銀行\n－空殼公司\n－線上賭場或離岸博弈\n－現今服務業者（MSB）\n－國際刑警組織發布之紅色通報（red notice）名單對象\n－無記名股份達10%以上或影響UBO判斷者",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第15條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第15條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-004",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶定審時是否需重新向客戶索取所有文件？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "不一定。\n定期客戶審查的目的為：\n重新檢視客戶並確保客戶資訊更新。\n並非全面重新向客戶徵提身分辨識及客戶審查文件。\n若前次徵提文件經確認無異動，可免重新徵提，但應留存確認軌跡備查。*SG",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第18條、第21條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第18條、第21條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-005",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "公司已發行無記名股份，可以開戶嗎？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "必須同時符合兩個條件：\n－條件一\n無記名股份未達已發行股份總數10%。\n－條件二\n不影響實質受益人（UBO）判斷。\n此外還須：\n－簽署「已發行無記名股份聲明書」。\n－執行EDD。\n若任一條件不符合，應婉拒或終止往來。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第12條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第12條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-006",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "什麼情況需要執行加強客戶審查（EDD）？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "加強客戶審查（EDD）應於客戶具有較高洗錢或資恐風險時執行，例如：\n－客戶風險評級結果為「高風險」\n－屬現任或卸任一年內之PEP或RCA\n－涉及犯罪或重大負面新聞\n－持有已發行無記名股份但符合受理條件之客戶\n－符合「通匯銀行(同存行Vostro Account)」定義者\n－私人銀行業務\n－已發行無記名股份之公司\n－具隱名(匿名)股東/隱名出資者(Nominee)之情形\n－開立OBU帳戶之自然人\n－禁止往來國家人士經例外核准評估往來\n－高階管理人為PEP 者\n－客戶國籍屬FATF公布之高風險國家或地區、加強監督國家或地區\n*SG",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第12條、第13條、第14條、第15條、第16條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第12條、第13條、第14條、第15條、第16條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-007",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "未載明",
+                     "effective":  "未載明",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如何計算自然人的直接、間接累計持股比例，以判斷是否為實質受益人？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "直接持股以實際持股比例認定；間接持股則以各層持股比例相乘計算；如同一自然人同時具有直接及間接持股，應將直接持股比例與各項間接持股比例加總後，作為其直接、間接累計持股比例，以判斷是否達實質受益人辨識標準（超過25%）。*pic",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-008",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些主體可以不用辨識實質受益人?",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "下列主體得免辨識其實質受益人（UBO）：\n－我國政府機關\n－我國公營事業機構\n－外國政府機關\n－我國公開發行公司及其子公司\n－於國外掛牌且依掛牌所在地規定應揭露主要股東之上市（櫃）公司及其子公司\n－受我國監理之金融機構及其管理之投資工具\n－設立於我國境外且採用FATF標準AML/CFT作業之金融機構及其管理之投資工具\n－我國政府機關管理之基金\n－員工持股信託\n－員工福利儲蓄信託...等\n但...\n惟仍須留存相關證明文件，且如該客戶：\n－來自高風險國家/地區\n－已發行無記名股票、\n－足資懷疑涉及洗錢或資恐時\n仍須執行身分確認，不得逕行適用豁免規定。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第10條第1項第2款、附件一",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第10條第1項第2款、附件一",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-009",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "未載明",
+                     "effective":  "未載明",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "什麼情況下，持股未超過25%的人仍可能被認定為實質受益人？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "包括但不限於：...\n1. 當其對客戶以下活動有絕對之決策權、投票權或否決權時：\n－決定採納或修改主體之營運 (含投資、捐贈及交易等) 計畫\n－改變公司營運性質，如銷售之產品\n－增貸\n－任命或解任總經理\n－頒布或修改任何股利(包含分配受益比例)政策，或任何對董事、員工之薪酬政策\n－同意任何員工認股權或類似之股權激勵計畫\n－修改章程/合夥協議書/契據(Deed)或類似權力文件\n－稀釋股權，包含核可增資或引進新股東/合夥人等\n－解散\n2. 有權任命或解任客戶過半席次之董事/普通合夥人/負責人\n3. 握有客戶或股權結構中之主體之重要資產，以致對公司營運決策具超越本身職權的影響力。\n4. 名義上僅一般董事，但事實上常態性影響董事會或其中之委員會的決策，重大決策皆受諮詢甚至具有最終決策權。\n5. 雖持股比例未超過25%，但對其他股東/合夥人之投票具有強烈的影響力，通常可能為公司創辦人，或可能為家族企業主要之經營人。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一第4條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一第4條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-010",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "未載明",
+                     "effective":  "未載明",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "可以透過哪些文件瞭解非自然人客戶的股權結構？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "例如股東名冊、章程、公司登記資料、董事職權證明書（COI）、公司查詢報告、商工登記資料等。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一「各類非自然人辨識實質受益人徵提文件」",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一「各類非自然人辨識實質受益人徵提文件」",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-011",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "未載明",
+                     "effective":  "未載明",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶審查程序為何？*更具體",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "客戶審查之目的在於重新檢視客戶並確保客戶資訊符合現況。執行時應先以本行既有留存資料進行客戶身分辨識及確認，檢視客戶資料是否異動，如有異動應更新客戶登錄作業系統並留存來源及相關文件。客戶為法人或團體者，確認範圍應包括實質受益人（UBO）及高階管理人資訊，必要時得重新徵提相關證明文件。\n高風險客戶除應依「客戶審查檢核表」進行查檢外，尚須重新確認加強客戶審查（EDD）相關事項，並完成「加強客戶審查檢核表暨問卷」後經主管審核；中、低風險客戶則依一般客戶審查規定辦理，經覆核人員審核後完成定期審查。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第21條、 附件六（115.2.2修訂）、附件七",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第21條、 附件六（115.2.2修訂）、附件七",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-012",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-02-02",
+                     "effective":  "2026-02-02",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "既有客戶若在定期審查時不配合或無法聯絡應如何處理？\n*實務",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "既有客戶如不配合審查或無法聯絡，於客戶審查到期日（T）後將給予 2個月緩衝期（T~T+2個月），緩衝期間內限制客戶申請新業務，但既有業務仍可往來，並於客戶登錄作業系統註記；如逾 T+2個月 仍不配合審查或無法聯絡，則應依客戶風險等級限制客戶新、舊業務往來，並於系統註記。倘客戶於審查到期日前即明確表示不配合審查，執行單位應留存相關紀錄備查，並於系統選擇拒絕；如已屆審查到期日仍無法聯絡上客戶，其處理方式亦比照上述規定辦理。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第24條、附件六",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第24條、附件六",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-013",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶以代理人辦理業務時，應確認哪些事項？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "應確認代理事實是否存在，並辨識及驗證代理人身分。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第10條第1項第3款",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第10條第1項第3款",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-014",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如客戶來自禁止往來國家，但已取得我國籍，或持有本國居留證／工作證，應如何判斷其風險？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "如客戶具有禁止往來國家國籍，原則上屬禁止往來客戶；惟自然人已取得我國國籍（領有國民身分證）者，得依客戶所留資訊及相關辦法進行評估，並執行加強客戶審查（EDD），經單位主管核決後准予往來；如客戶持有本國政府機關核發之文件（如居留證、工作證等），除應執行加強客戶審查外，尚須敘明開戶及往來目的、評估其合理性，並以公文會簽至防制洗錢及打擊資恐專責主管核准後，始得建立業務關係。\n惟須注意的是，即使經核准往來，該客戶所從事之交易仍不得涉及禁止往來國家。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第15條第1項第1款第（二）目",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第15條第1項第1款第（二）目",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-015",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶風險等級由低/中風險變更為高風險，是否須執行EDD？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "是。如經定期審查導致客戶風險評級由中風險或低風險變更為高風險，應對該客戶執行加強客戶審查（EDD），並依客戶風險評級變更程序辦理。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第9條、第19條、第21條第2項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第9條、第19條、第21條第2項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-016",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "未載明",
+                     "effective":  "未載明",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如客戶來自高洗錢及資恐風險區域，是否須執行EDD？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "是。如客戶之國籍、現居地、法人註冊地或營業地點屬 FATF 公布之高風險國家或地區或加強監督國家或地區，於建立業務關係時應執行加強客戶審查（EDD），並於系統建檔。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第16條第3款、附件四",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第16條第3款、附件四",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-017",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "未載明",
+                     "effective":  "未載明",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些產業屬於敏感性行業？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "*再確認: 移工匯兌\n「敏感性行業」包括以下產業之法人及任職於該產業且擔任高階主管職位之自然人：\n－博弈產業\n－軍火產業、航空器／船舶製造業\n－高單價商品交易商（如鑽石、珠寶、貴金屬、美術品、古董、遊艇、船舶及航空器交易商）\n－典當及民間融資業者\n－專業服務提供者（如律師、會計師、公證人及相關事務所）\n－虛擬資產服務商（VASP）高階主管\n－與政治、宗教、社福慈善相關之非營利組織（NPO）\n－不動產租賃及買賣業、不動產經紀人\n－大使館／領事館、外交單位\n－人力（外勞）仲介業者\n－線上遊戲點數發行業者\n－第三方支付服務業\n－網路借貸平台業者（P2P業者）。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第16條第2款、附件三",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第16條第2款、附件三",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-018",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "總行規定哪些情況應婉拒建立業務關係或交易？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "客戶如有下列情形之一者，應予以婉拒建立業務關係或交易：\n－疑似使用匿名、假名、人頭、虛設帳號或虛設法人團體開戶或投保\n－代理事實或代理人身分無法查證；拒絕提供客戶身分審查所需文件\n－持用偽造或變造身分證明文件\n－僅提供身分證明文件影本（法令允許者除外）\n－提供之文件資料可疑、模糊不清或無法查證\n－無故拖延補件\n－屬資恐防制法指定制裁對象、恐怖分子或恐怖組織\n－建立業務關係或交易時有異常情形而無法提出合理說明\n－往來資金來源疑似為貪瀆或濫用公共資產\n－禁止往來客戶\n此外，對於無法完成客戶身分確認程序者，應考量申報與該客戶有關之疑似洗錢或資恐交易。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第23條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第23條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-019",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如果客戶命中制裁名單，銀行應如何處理？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "若客戶經確認為受制裁對象，應依制裁類型區分處理：\n如屬資恐防制法所稱之受制裁對象，應：\n① 立即清查客戶於本行之業務往來及交易，立即凍結客戶帳戶及交易，同時通報洗錢防制部協調處理\n② 禁止任何新、舊業務往來及核准任何交易\n③ 於法定期限內由洗錢防制部通報法務部調查局\n如屬資恐防制法以外之受制裁對象（包括 OFAC、EU、UN 等外國政府或國際組織之制裁對象），則：\n① 禁止任何新、舊業務往來及核准任何交易\n② 由權責單位或營業單位檢視客戶交易情形，如有可疑交易則依規辦理疑似洗錢交易申報",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第22條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第22條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-020",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些客戶屬於本行指定的「特殊性質客戶」？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "應特別注意之特殊性質客戶包括：\n① 重要政治性職務人士（PEP）、其家庭成員及有密切關係之人（RCA）\n② 敏感性行業客戶\n③ 來自高洗錢及資恐風險區域之客戶\n④ 涉及犯罪、重大負面新聞或消息之客戶\n對於前述客戶，本行應依規定執行加強客戶審查（EDD）及相關控管措施，以瞭解其身分、資金來源、往來目的及交易合理性。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第16條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第16條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-021",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Governance/Reporting",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2025-10-03",
+                     "effective":  "2025-10-03",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些 AML/CFT 事件須立即通報總（母）行？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "國外分支機構如發生：\n1. 主管機關缺失、警告、糾正、裁罰、調查或行政處分\n2. 重大違反法令或遭停評、降評\n3. 管理機制或資訊系統無法運作、功能喪失或故障\n4. 機構、董監事或員工涉入洗錢或資恐不法行為\n5. 機構、董監事或員工遭媒體、網路等揭露涉嫌洗錢或資恐不法行為\n應即時以口頭或書面通報總（母）行洗錢防制部；如以口頭通報，應於 7 個營業日內完成書面補正。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國外分支機構防制洗錢及打擊資恐管理細則｜第13條第2項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國外分支機構防制洗錢及打擊資恐管理細則",
+                     "article":  "第13條第2項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-022",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Governance/Reporting",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2025-07-18",
+                     "effective":  "2025-07-18",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "國外分支機構的名單設定是否必須完全比照總行？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "不一定。國外分支機構之名單掃描範圍及欄位仍應以各國外分支機構實際開辦之業務為準。此外，國外分支機構之參數設定與檢核名單選用，原則上應依總（母）行規範辦理；惟已依第三方廠商檢驗結果完成參數調整之國外分支機構，或採用不同AML系統之國外分支機構，得依當地主管機關要求辦理設定。\n如國外分支機構擬採行不同於總（母）行之設定，應檢具理由，包括但不限於因應當地法規、主管機關要求或實際業務開辦情形等，並呈報總（母）行防制洗錢及打擊資恐專責主管核准（備）後始得辦理。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶及交易有關對象之姓名及名稱檢核暨測試程序作業規則｜第10條第3項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶及交易有關對象之姓名及名稱檢核暨測試程序作業規則",
+                     "article":  "第10條第3項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-023",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2025-07-18",
+                     "effective":  "2025-07-18",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "當系統掃描出警報時，應再採取哪些檢視措施，以確認是否真實命中？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "當AML系統產生警報後，應再透過人工檢視程序蒐集及比對更多資訊進行判斷。檢視措施包括：\n1. 如名單附有照片，應比對名單照片與客戶本人是否相符\n2. 檢視或詢問客戶基本資料及其他背景資料，確認是否與名單所載資訊一致\n3. 檢視名單相關新聞資料所涉及之人、事、時、地、物是否與客戶相符或具關聯性",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶及交易有關對象之姓名及名稱檢核暨測試程序作業規則｜第5條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶及交易有關對象之姓名及名稱檢核暨測試程序作業規則",
+                     "article":  "第5條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-024",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "得知客戶疑似涉及規避制裁且風險較高時，應採取哪些管控措施？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "如得知客戶疑似涉及規避制裁且風險較高時，應採取以下至少一項管控措施：\n1. 加強盡職調查\n2. 提高交易授權核准層級\n3. 提升客戶風險評級\n4. 限制交易幣別\n5. 限制往來業務範圍\n6. 其他足以抵減制裁風險管控措施",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜第9條第3項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "第9條第3項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-025",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶如有涉及紅旗警示的行為，應如何處理?",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "一般性紅旗警示（Red Flags）主要包括下列態樣：\n1. 客戶拒絕提供重要資訊：如拒絕提供最終用戶、預期最終用途、公司所有權等詳細訊息\n2. 交易參與者身分異常：如貨運代理公司被列為產品之最終用戶\n3. 支付條件或付款方式異常：如以大額現金支付，或透過未參與交易之第三國支付款項\n4. 利用空殼公司進行交易：如利用空殼公司辦理電匯，且涉及與公司註冊地不同司法管轄區之金融機構\n5. 交易商品與客戶營業項目不符：如客戶交易商品與其營業項目或業務性質顯不相符\n6. 所有權結構異常變動：如於制裁名單更新前移轉持股、股權移轉頻繁、股權結構變動頻繁、股東持股高度分散或透過複雜架構安排所有權\n7. 公司所有權資訊不透明：如私人公司無公開揭露義務、成立於秘密或不合規司法管轄區，或位於與受制裁國家或地區金流相關之司法管轄區\n8. 透過信託或律師持有股權：如透過信託方式擁有或控制實體，或由律師事務所、律師本人擔任受託人或股東\n9. 公司資訊難以取得或查證：如跨境電匯來自與公司註冊地不同之司法管轄區，且無法透過網路或商業資料庫查詢受益人、發起人或公司相關資訊\n10. 利用離岸公司或離岸資產隱匿資訊：如公司設立於保密程度較高之司法管轄區，藉此隱藏非法收益或受益人身分，且公司登記資訊不透明、不易追蹤\n如發現上述紅旗警示，相關單位應依第9條規定辦理盡職調查；如經評估客戶涉及規避制裁行為且風險較高時，應採取至少一項風險管控措施。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜附件一",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "附件一",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-026",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "俄羅斯制裁規避紅旗警示的態樣有哪些？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "俄羅斯制裁規避紅旗警示係參考美國FinCEN、美國商務部工業暨安全局（BIS）、美國財政部及司法部等機關發布之指引所整理，主要包括下列態樣：\n1. 利用第三國或轉運點規避制裁：如利用已知可能出口至俄羅斯或白俄羅斯之貿易走廊或轉運點運送貨物；透過中國（含香港及澳門）、亞美尼亞、土耳其、烏茲別克等轉運地規律採購或運送商品\n2. 交易安排異常變更：如原規劃出貨或付款至俄羅斯、白俄羅斯或其公司之交易，突然改變交易對象或目的地；最後一刻更改匯款人、受款人、付款安排或貨運指示\n3. 交易參與者資訊不透明：如參與交易之公司於網路上幾乎沒有資訊、網站資訊有限、無公司網域電子郵件，或客戶使用個人電子郵件而非公司電子郵件辦理交易\n4. 客戶拒絕提供交易資訊：如客戶缺漏或拒絕提供最終使用者、預期最終用途、銀行資訊、貨運資訊、第三方資訊或公司所有權資訊\n5. 付款來源或路徑異常：如付款來自與交易無關之第三國或第三方廠商；交易付款經由潛在轉運地點；或原先安排之付款途徑於最後一刻改由其他國家或公司付款\n6. 收貨人或最終使用者異常：如貨運代理公司、物流公司、郵遞中心或金融機構被列為最終收貨人、收貨人或最終使用者；收貨人業務內容與商品用途並不相符\n7. 運輸路線異常：如產品與目的地搭配非典型運輸路線；船運走廊涉及已知轉運國家；或交易涉及原本預計運往俄羅斯、白俄羅斯之奢侈品改送至轉運國家\n8. 商品與客戶業務性質不符：如交易商品、軟體或技術與購買者業務範圍不一致；客戶突然從事與國防、軍事或軍商兩用貨品有關之交易\n9. 涉及軍商兩用貨品、高科技貨品或出口管制貨品：如大量採購電子零件、電子設備、工業產品或其他軍商兩用貨品；涉及美國商務部商業管制清單（CCL）或EAR99類商品之交易\n10. 新成立或異常成長之公司參與交易：如與2022年2月24日後成立之公司從事國防或軍商兩用貨品交易；原先未從事相關商品出口之客戶突然承作該類交易；或相關訂單數量大幅增加\n11. 與受制裁實體存在關聯：如公司與美國商務部 Entity List、財政部 SDN List 或其他禁止名單實體具有共同所有權、共同營運地點、共同地址，或名稱高度相似\n12. 與俄羅斯國有企業或受制裁對象有關聯：如公司或個人與俄羅斯國有企業具有共同所有權、分公司、子公司或股東關係，並涉及出口相關交易或服務\n13. 地址、聯絡資訊或背景資料異常：如交易各方地址與實際營運地點不符；地址不存在或為住宅地址；電話國碼與目的地國家不一致；客戶IP位址與揭露營運地點不符\n14. 交易價格異常：如客戶支付之商品價格明顯高於已知市場價格\n15. 涉及曾違反出口管制規範之人員或公司：如曾因違反美國出口管制法而遭定罪之個人，其新開立帳戶或從事進出口相關交易活動。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜附件一",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "附件一",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-027",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些客戶會被列為具俄羅斯制裁風險客戶？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "本行如透過主管機關、公會轉知資訊或內部盡職調查發現客戶可能涉及俄羅斯制裁風險，並經防制洗錢及打擊資恐專責主管核定後，將納入本行「具俄羅斯制裁風險客戶」關注名單。​\n客戶可能涉及俄羅斯制裁風險之情形包括：\n1. 客戶之實質受益人具有俄羅斯背景（如俄羅斯國籍或地域關聯性）。\n2. 客戶涉及與俄羅斯經濟制裁相關之負面媒體新聞。\n3. 客戶行為疑似涉及外國政府或國際組織發布指引所提及之規避俄羅斯制裁紅旗警示（Red Notice）。\n符合上述情形之一，且經洗錢防制部評估其所涉風險較高者，得列為具俄羅斯制裁風險客戶。​",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜第12條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "第12條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-028",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "假設客戶辦理直接涉及俄羅斯之交易，應如何辦理？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "對直接涉及俄羅斯之交易，本行應遵循相關制裁規定，以風險基礎方法辦理盡職調查，確認交易未違反該規定。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜第14條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "第14條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-029",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些交易會被認定為「可能間接涉及俄羅斯之交易」？發現這類交易時應如何處理？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "如客戶已被列為「具俄羅斯制裁風險客戶」，且其辦理涉及轉運俄羅斯高風險國家之出口貨款相關交易，則屬於「可能間接涉及俄羅斯之交易」。相關交易類型包括：\n• 國外匯入款（T/T）\n• 外匯出口信用狀（L/C）\n• 出口託收交易（D/P、D/A）\n其中，轉運俄羅斯高風險國家係指美國FinCEN或我國主管機關（含公會轉知）公告之國家（詳「國際制裁遵循要點」附件三）。​\n對於可能間接涉及俄羅斯之交易，本行應採行下列管控措施：\n（一）徵提交易文件\n至少應取得：\n• 發票（Invoice）\n• 貨運提單（Bill of Lading）\n另客戶提供之交易資料應包含貨品之國際商品統一分類代碼（HS CODE）資訊\n（二）辦理貨品品項檢核\n應確認出口貨品是否屬於：\n• 輸往俄羅斯及白俄羅斯高科技貨品清單\n• 軍商兩用貨品及技術出口管制清單及一般軍用貨品清單\n（三）如貨品屬高科技貨品清單\n應先徵提下列文件後始得承作：\n• 貿易署切結書（紅色警戒清單〈異常交易〉檢核切結書）\n• 如無法提供切結書，應改提供聲明書及交易對手盡職調查資料（KYCC）\n• 如受貨地為俄羅斯，應另徵提戰略性高科技貨品輸出許可證\n（四）如貨品屬軍商兩用貨品清單\n應先徵提下列文件後始得承作：\n• 戰略性高科技貨品輸出許可證\n• 貿易署切結書\n• 如無法提供切結書，應改提供聲明書及交易對手盡職調查資料（KYCC）\n（五）如屬尚未出口之預收貨款\n• 對具俄羅斯制裁風險客戶之預收貨款匯入案件，應於取得出貨後之貨運單據，並完成上述相關管控措施後，始得解付款項\n• 惟對於往來已久且資信優良之客戶，於風險可控範圍內，得先行解付預收貨款，再以事後追蹤方式取得出貨後貨運單據",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜第15條、第16條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "第15條、第16條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-030",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "哪些國家屬於轉運俄羅斯高風險國家？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "轉運俄羅斯高風險國家，指依美國 FinCEN 或我國主管機關來函（含公會轉知）所公告之國家為主，包括：\n－亞美尼亞（Armenia, AM）\n－巴西（Brazil, BR）\n－中國（China, CN）\n－喬治亞（Georgia, GE）\n－印度（India, IN）\n－以色列（Israel, IL）\n－哈薩克（Kazakhstan, KZ）\n－吉爾吉斯（Kyrgyzstan, KG）\n－墨西哥（Mexico, MX）\n－尼加拉瓜（Nicaragua, NI）\n－塞爾維亞（Serbia, RS）\n－新加坡（Singapore, SG）\n－南非（South Africa, ZA）\n－塔吉克（Tajikistan, TJ）\n－土耳其（Turkey, TR）\n－阿聯（United Arab Emirates, AE）\n－烏茲別克（Uzbekistan, UZ）\n當交易涉及上述17個國家時，應留意是否屬於「可能間接涉及俄羅斯之交易」，並依第16條規定辦理徵提單據、HS CODE檢核及相關風險管控措施。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜第15條、附件三",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "第15條、附件三",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-031",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Sanctions/Screening",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2024-12-17",
+                     "effective":  "2024-12-17",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "對具俄羅斯制裁風險客戶之出口融資交易應進行哪些航程盡職調查？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "對具俄羅斯制裁風險客戶之出口融資交易，應檢核：船隻是否存續、船隻種類特性與貨品屬性是否一致、運輸使用船舶是否涉及制裁名單、航程是否與運輸單據內容一致、船籍或航程是否涉及制裁國家或可能規避制裁之第三地、船舶所有人或船舶實質受益人（及其國家）是否為外國政府或國際組織之制裁對象。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國際制裁遵循要點｜第18條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國際制裁遵循要點",
+                     "article":  "第18條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-032",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如何判斷 PEP 的 RCA？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "所稱與 PEP 有密切關係之人（RCA），係指與 PEP 具密切社會或職業關係之人：\n1. 與 PEP 為同一合夥事業之合夥人\n2. 與 PEP 為同一公司之董事、監察人或高級主管\n3. 與 PEP 有密切商業往來關係之人\n4. 為 PEP 之受僱人或僱用人\n5. 由前款受僱人或由其擔任代表人之法人所僱用之人\n6. 與 PEP 為同一借款債務之借款人、保證人或提供擔保之人\n7. 代理 PEP 為洗錢防制法第十二條第一項達一定金額以上之通貨交易之人\n8. 與 PEP 為同一法人或信託之實質受益人\n9. 擔任為 PEP 利益所設立法人或信託之實質受益人\n10. 受 PEP 委託，負責持有、管理或運用其資產或其他利益之人\n11. 以PEP 為受益人之人身保險契約，該契約之要保人及被保險人\n12. PEP 所屬人民團體或工會之負責人",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件二",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件二",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-033",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "PEP 家庭成員範疇?",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "所稱重要政治性職務之人，其家庭成員範圍如下：\n1. 一親等直系血親/姻親：父母、子女、岳父母、公婆、媳婦、女婿\n2. 兄弟姊妹\n3. 配偶及其兄弟姊妹\n4. 相當於配偶之同居伴侶",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件二",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件二",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-034",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如何判斷離職或卸任逾一年 PEP 之實質影響力?",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "實質影響力之輔助判斷包含：\n一、一年內是否有活躍之政治新聞，例如：\n1. 參與政黨相關活動（自身參選或替其他候選人站臺）\n2. 出席政商名流場合（包括拜會）\n3. 擔任政府幕僚、顧問等\n4. 擔任政黨重要職務（中常委、黨部主委、競選總部主任/總幹事等）\n二、依Google查得RCA是否為PEP\n1. 以RCA是否為現任或卸任1年內為判準\n2. 一親等直系血親：父母、子女\n3. 一親等姻親：岳父母、公婆、媳婦、女婿\n4. 兄弟姊妹\n5. 配偶及其兄弟姊妹\n三、綜合判斷之參考標準\n1. 該人士原屬PEP，且任職時間長\n2. 持續擔任政府諮詢職務（譬如幕僚、顧問等）\n3. 時常進出政商名流的社交場所\n4. 據媒體報導或相關人士指稱為政壇大老\n5. 該人士之RCA為現任政治人物\n6. 政治世家\n本判斷標準屬於參考，同仁於辨識PEP或RCA時，仍應以現時規範與實務情形為準。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件二附錄第二項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件二附錄第二項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-035",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶為分公司或辦事處等分支機構時，應如何辨別實質受益人?",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "應辨識總公司之實質受益人，並考慮其在當地的經理人、代表人等是否對客戶具控制權而亦為實質受益人。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一 3.4",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一 3.4",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-036",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "辨識實質受益人時，若客戶的直接股東為非自然人，辨識所有權結構應追查到什麼程度？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "原則上應對該非自然人股東徵提股東名冊等資料，確認其所有權及控制權結構，並持續向上追查，直到找出所有（100%）直接、間接持有客戶股權之自然人為止。\n惟如得證明持股者屬於豁免辨識之主體，因無須再辨識其所有權，亦可視為已辨識至自然人。\n另外，如已揭露之直接、間接持股資訊已足以確認實質受益人，且未揭露部分即使補充亦不可能影響實質受益人辨識結果，則可視為已完成辨識，例如：已知有1位自然人直接、間接持有1間公司達76%之股權，則剩下24%原則上已無揭露必要性。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-037",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "如發現客戶之關聯人為本行禁止往來客戶，是否得與該客戶進行業務往來？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "原則上不可以，倘客戶之關聯人屬於本行禁止往來客戶之任一類型，則該客戶應視為禁止往來客戶。只有當該客戶之關聯人已取得我國國籍或持有本國政府機關核發文件者，方得於評估後准予往來（依第15條第1項第1款第2目規定辦理）。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第11條第3項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第11條第3項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-038",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶之關聯人包含哪些？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "關聯人包含法定代理人、有權控制帳戶之人、實質受益人、負責人、負責人所代表法人、法人負責人指定之人、高階管理人等。若客戶為信託之受託人，則須包含委託人、受託人、信託監察人、受益人及其他可控制該信託帳戶之人士。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第11條第1項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第11條第1項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-039",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "客戶為法人、團體或信託之受託人時，應向其取得哪些書面文件，以確實執行 KYC？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "當客戶為法人、團體或信託之受託人時，本行應瞭解其業務性質、所有權與控制權結構，並至少取得下列資訊及文件：\n登記證照、公文或相關證明文件、政府核發之營業執照、合夥協議（Partnership Agreement）、信託文件（Trust Instrument）、存續證明（Certification of Incumbency）等，並徵提如董事會議紀錄、公司或信託之章程或類似之權力文件、財務報表等，以瞭解其名稱及法律形式。但章程或類似權力文件於下列情形得不適用：\nA. 符合毋須辨識及確認該客戶實質受益人，且無第10條第4款情形者。\nB. 團體客戶經確認未訂定章程或類似權力文件者。\n擔任實質受益人（UBO）之資訊，包括姓名、身分證明文件號碼（ID）、出生日期、國籍、服務機構及職稱等資料。\n擔任高階管理職位人員之資訊，包括董事、監事、理事、總經理、代表人、管理人、合夥人或相當職務之自然人；其中姓名及國籍為必填欄位。如經掃描出現疑似命中名單需進一步判斷時，須另取得出生日期等資訊作為輔助判斷；如透過公開資訊即可確認者，得免提供生日資訊，但應留存佐證資料。\n客戶註冊登記之辦公室地址及主要營業處所地址。\n法人客戶之控制關聯團體資訊，即直接或間接持有該客戶股份（或出資額）超過 25% 之法人。\n地址驗證文件，包括客戶帳單、對帳單或官方核發文件等，以進行地址驗證。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第10條第1項第1款第3目",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第10條第1項第1款第3目",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-040",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Training",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2025-10-03",
+                     "effective":  "2025-10-03",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "本地主管機關或相關單位未舉辦防制洗錢及打擊資恐教育訓練要怎麼辦？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "如當地主管機關或相關單位未舉辦相關教育訓練課程，得參加總（母）行防制洗錢及打擊資恐專責主管同意之內部或外部訓練單位所舉辦之教育訓練課程，包括但不限定期或不定期回台接受訓練及交流、線上課程等。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國外分支機構防制洗錢及打擊資恐管理細則｜第15條第2項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國外分支機構防制洗錢及打擊資恐管理細則",
+                     "article":  "第15條第2項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-041",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "Training",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2025-10-03",
+                     "effective":  "2025-10-03",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "國外分支機構防制洗錢及打擊資恐督導主管、主管及專責人員每年至少應參加幾小時AML/CFT教育訓練？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "國外分支機構防制洗錢及打擊資恐督導主管、主管及專責人員每年應至少參加由當地主管機關或相關單位舉辦之AML/CFT教育訓練課程12小時。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "國外分支機構防制洗錢及打擊資恐管理細則｜第15條第1項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "國外分支機構防制洗錢及打擊資恐管理細則",
+                     "article":  "第15條第1項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-042",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "何為空殼公司（Shell Company）？發現客戶為空殼公司時應如何處理？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "空殼公司（Shell Company）係指同時符合下列三項條件之公司：\n1. 於註冊地無實體存在。\n2. 無固定之營業地址（如無登記地址，亦無營業處所或辦公室實際協助相關業務）。\n3. 未於固定地址維持營運紀錄。\n客戶如經確認屬於空殼公司，即屬本行禁止往來客戶，應立即通報洗錢防制部協調處理，並立即停止任何業務往來。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第15條第1項第4款、第15條第2項",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第15條第1項第4款、第15條第2項",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-043",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "實質受益人持股比例剛好25%算嗎？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "等於25%亦屬實質受益人。此外，需同時考量直接與間接持股，例如透過控股公司或信託所控制之股份皆需併入計算。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-044",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "本行原則上將「現金服務業者（MSB）」列為禁止往來戶。若國外分子行因特殊業務需求需開立此類客戶，其簽核與核准程序為何？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "必須採取個案討論申請的方式，會簽洗錢防制部檢視後，轉呈防制洗錢及打擊資恐專責主管核准，始得進行業務往來。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第15條第1項第9款",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第15條第1項第9款",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-045",
+                     "biz":  "企金／消金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "營業單位若在 KYC 過程中，發現客戶涉及重大犯罪或負面新聞，但系統當時並未提示警報時，應如何調高其風險評級？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "應彙整相關資訊，以公文會簽洗錢防制部綜合研判客戶所涉情節，經防制洗錢及打擊資恐專責主管核定後，調高該客戶之風險評級，並對客戶重辦 EDD，且將該對象納入本行自建名單中。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第9條、第16條第4款",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第9條、第16條第4款",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-046",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "什麼情況下外國公司可豁免辨識實質受益人？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "適用豁免的外國公司主體類型 ：\n1.外國政府機關\n2.於國外掛牌並依掛牌所在地規定，應揭露其主要股東之股票上市、上櫃公司，以及該上市上櫃公司之子公司\n3.設立於我國境外，且採用 FATF 標準（金融行動工作組織標準）執行 AML/CFT（防制洗錢與打擊資恐）作業的金融機構，以及該金融機構管理之投資工具\n即使外國公司屬於上述得豁免的主體類型，但若發生以下任一情形，本行在確認客戶身分時仍必須辨識其實質受益人，而不應逕予適用豁免規定：\n1.已發行無記名股票：若該公司可以發行無記名股票，必須確認其所有已發行股票皆為記名式始得豁免；若屬於「已發行無記名股票之公司」，則必須辨識其實質受益人\n2.註冊於高風險國家或地區：客戶不得註冊於未採取有效防制洗錢或打擊資恐之高風險國家或地區\n3.涉有洗錢或資恐嫌疑：足資懷疑該客戶、關聯人或交易涉及洗錢或資恐，而必須執行客戶身分確認者",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜第10條第3、4款、附件一第2條",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "第10條第3、4款、附件一第2條",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-047",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "當法人客戶或其股權結構中之主體，同時設有「有表決權」與「無表決權」之股份時，在辨識與確認實質受益人時，應如何處理其持股比例之計算？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "應優先確認「有表決權」之股份。其中若有單一自然人直接、間接持有該客戶之有表決權股份大於 25% 者，即為實質受益人。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一第3條第 3.2 點",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一第3條第 3.2 點",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-048",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "若法人客戶持有「庫藏股」或「自己間接持有自己股份」之情形，在繪製股權結構圖並計算實質受益人持股比例時，此部分股份應如何計算？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "該部分股份因為屬於「已發行但未在外流通」之股份，在計算股權比例時不應被計算在內（意即直接視同未發行，並從總股數中扣除）。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一第3條第 3.3 點",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一第3條第 3.3 點",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-049",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "在判斷客戶是否有「其他控制權人」時，若發現某自然人依契約、章程或實際狀況對公司具有重大決策權或否決權，但其身分為「律師、會計師或法院選任之破產管理人」，原則上應如何判定其是否為控制權人？有何例外？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "若該人士屬於客戶所聘雇之專職服務提供者（如：執業律師、執業會計師、法院選任之破產管理人，或員工選出之工會代表，或是基於客戶原先與第三方簽訂之契約所指派而具有一定權力之人），原則上可排除於控制權人的判斷之外。\n惟若銀行經深入了解後，發現該專職服務提供者所行使之權力「已經超出其一般職能之外」，則依然要考慮將其納入控制權人（實質受益人）進行判斷。",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一第4條第 4.2 點",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一第4條第 4.2 點",
+                     "link":  ""
+                 },
+                 {
+                     "id":  "FAQ-050",
+                     "biz":  "企金",
+                     "aspect":  "法規面",
+                     "category":  "KYC/CDD",
+                     "owner":  "AML Buddy 正式題庫",
+                     "status":  "published",
+                     "version":  "v1.0",
+                     "updated":  "2026-03-27",
+                     "effective":  "2026-03-27",
+                     "nextReview":  "2027-07-28",
+                     "q":  {
+                               "zh":  "當法人客戶無直接或間接累計持股超過 25% 之最終自然人時，應如何辨識「透過其他方式對客戶行使控制權之自然人」？",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "a":  {
+                               "zh":  "判定法人客戶具有「其他控制權人」應透過深入 KYC，從章程、合夥協議書、會議紀錄、客戶自述、公開資訊或可信賴媒體報導等管道，評估自然人是否具有以下重點情形之一：\n1.具絕對決策、投票或否決權：能決定或修改營運計畫（含投資、捐贈及交易等）、改變公司營運性質（如銷售產品）、增貸、任免總經理、修改股利/薪酬政策、同意員工認股、修改章程/合夥協議、核可增資、公司解散等\n2.具人事任免權：有權任免過半席次之董事、普通合夥人或負責人\n3.掌握關鍵資產：握有智財權、關鍵技術、關鍵供應商或客戶，對營運具超越本身職權的影響力\n4.屬「影子董事」：名義上僅是一般董事，但常態性影響決策且具最終決策權\n5.具強烈投票影響力：持股未超 25% 但對其他股東/合夥人投票具強烈影響力之創辦人或家族主要經營人；或多位股東透過書面協議聯合控制表決權\n6.透過契約或關係實質掌控：如股份登記為子女但實際由父母掌控，或所有權未達門檻但透過信託契約獲取控制權者\n惟若符合上述條件者為律師、會計師、破產管理人、工會代表等專職服務提供者，原則上應排除於控制權人之外，除非其行使的權力已超出其一般職能",
+                               "en":  "",
+                               "ja":  ""
+                           },
+                     "ref":  {
+                                 "zh":  "客戶洗錢與資恐風險評估暨審查細則｜附件一第4條第 4.1 點",
+                                 "en":  "",
+                                 "ja":  ""
+                             },
+                     "source":  "客戶洗錢與資恐風險評估暨審查細則",
+                     "article":  "附件一第4條第 4.1 點",
+                     "link":  ""
+                 }
+             ],
+    "audit":  [
+                  {
+                      "time":  "2026-07-28 11:39",
+                      "user":  "系統",
+                      "action":  "匯入正式題庫",
+                      "target":  "0728修_Q\u0026A.ods｜50題"
+                  }
+              ],
+    "versions":  [
+                     {
+                         "version":  "v1.0",
+                         "title":  "Governance/Reporting 正式題庫匯入",
+                         "meta":  "0728修_Q\u0026A.ods｜2題｜已發布"
+                     },
+                     {
+                         "version":  "v1.0",
+                         "title":  "KYC/CDD 正式題庫匯入",
+                         "meta":  "0728修_Q\u0026A.ods｜36題｜已發布"
+                     },
+                     {
+                         "version":  "v1.0",
+                         "title":  "Sanctions/Screening 正式題庫匯入",
+                         "meta":  "0728修_Q\u0026A.ods｜10題｜已發布"
+                     },
+                     {
+                         "version":  "v1.0",
+                         "title":  "Training 正式題庫匯入",
+                         "meta":  "0728修_Q\u0026A.ods｜2題｜已發布"
+                     }
+                 ]
+};
+
+    let state = loadState();
+    let currentScreen = "dashboard";
+    let editingId = null;
+    let toastTimer = null;
+    let publishedBaselines = new Map();
+
+    function clone(value){ return JSON.parse(JSON.stringify(value)); }
+    function findSeedFaq(id){
+      return seedData.faqs.find(item=>item.id===id);
+    }
+    function faqSnapshot(faq){
+      if(!faq) return null;
+      return {
+        id:faq.id,
+        biz:faq.biz,
+        aspect:faq.aspect,
+        category:faq.category,
+        owner:faq.owner,
+        status:faq.status,
+        version:faq.version,
+        updated:faq.updated,
+        effective:faq.effective,
+        nextReview:faq.nextReview,
+        q:clone(faq.q || {zh:"",en:"",ja:""}),
+        a:clone(faq.a || {zh:"",en:"",ja:""}),
+        ref:clone(faq.ref || {zh:"",en:"",ja:""}),
+        source:faq.source,
+        article:faq.article,
+        link:faq.link
+      };
+    }
+    function getPreviousFaq(faq){
+      if(!faq) return null;
+      return publishedBaselines.get(faq.id) || faq.previous || faqSnapshot(findSeedFaq(faq.id));
+    }
+    function normalizeState(value){
+      const normalized = clone(value);
+      normalized.faqs.forEach(faq=>{
+        if(faq.aspect==="正式題庫") faq.aspect = "法規面";
+        if(faq.category==="KYC/CDD/EDD") faq.category = "KYC/CDD";
+        const seed = findSeedFaq(faq.id);
+        if(seed && faq.status==="published" && dateScore(seed.updated) > dateScore(faq.updated)){
+          Object.assign(faq,faqSnapshot(seed));
+          return;
+        }
+        if(!faq.previous && ["draft","pending","approved"].includes(faq.status)){
+          if(seed) faq.previous = faqSnapshot(seed);
+        }else if(seed && ["draft","pending","approved"].includes(faq.status) && dateScore(seed.updated) > dateScore(faq.previous?.updated)){
+          faq.previous = faqSnapshot(seed);
+        }
+      });
+      (normalized.versions || []).forEach(item=>{
+        item.title = String(item.title || "").replaceAll("KYC/CDD/EDD","KYC/CDD");
+        item.meta = String(item.meta || "").replaceAll("KYC/CDD/EDD","KYC/CDD");
+      });
+      return normalized;
+    }
+    function escapeHtml(value){
+      return String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      })[char]);
+    }
+    function loadState(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? normalizeState(JSON.parse(saved)) : clone(seedData);
+      }catch(error){
+        return clone(seedData);
+      }
+    }
+    function requestJson(url, options = {}){
+      const method = options.method || "GET";
+      const headers = options.headers || {};
+      const body = options.body || null;
+      const useXhr = () => new Promise((resolve,reject)=>{
+        const xhr = new XMLHttpRequest();
+        xhr.open(method,url,true);
+        Object.entries(headers).forEach(([key,value])=>xhr.setRequestHeader(key,value));
+        xhr.onload = () => {
+          if(xhr.status < 200 || xhr.status >= 300){
+            reject(new Error("HTTP "+xhr.status));
+            return;
+          }
+          try{
+            resolve(xhr.responseText ? JSON.parse(xhr.responseText) : {});
+          }catch(error){
+            reject(error);
+          }
+        };
+        xhr.onerror = () => reject(new Error("XHR request failed"));
+        xhr.send(body);
+      });
+
+      if(typeof fetch !== "function"){
+        return useXhr();
+      }
+
+      return fetch(url,options)
+        .then(response=>{
+          if(!response.ok) throw new Error("HTTP "+response.status);
+          return response.json();
+        })
+        .catch(()=>useXhr());
+    }
+    async function loadFaqsFromServer(){
+      if(!HAS_DYNAMIC_API) return;
+      try{
+        const payload = await requestJson(API_FAQS_URL+"?format=full");
+        const faqs = Array.isArray(payload.faqs) ? payload.faqs : Array.isArray(payload.items) ? payload.items : null;
+        if(!faqs) return;
+        publishedBaselines = new Map(
+          faqs
+            .filter(faq=>faq.status==="published")
+            .map(faq=>[faq.id,faqSnapshot(faq)])
+        );
+        const mergeResult = mergeServerFaqs(faqs);
+        state = normalizeState({...state,faqs:mergeResult.faqs});
+        persist({sync:false});
+        repairPreviousSnapshots();
+        if(mergeResult.shouldSync){
+          syncFaqsToServer();
+        }
+        refreshCurrentScreen();
+      }catch(error){
+        console.warn("loadFaqsFromServer skipped",error);
+      }
+    }
+    function faqContentKey(faq){
+      return JSON.stringify({
+        status:faq.status,
+        q:faq.q,
+        a:faq.a,
+        ref:faq.ref,
+        source:faq.source,
+        article:faq.article,
+        link:faq.link
+      });
+    }
+    function dateScore(value){
+      const time = Date.parse(value || "");
+      return Number.isFinite(time) ? time : 0;
+    }
+    function mergeServerFaqs(serverFaqs){
+      const localById = new Map(state.faqs.map(faq=>[faq.id,faq]));
+      const serverIds = new Set(serverFaqs.map(faq=>faq.id));
+      let shouldSync = false;
+      const merged = serverFaqs.map(serverFaq=>{
+        const localFaq = localById.get(serverFaq.id);
+        if(!localFaq){
+          return serverFaq;
+        }
+
+        if(["draft","pending"].includes(localFaq.status)){
+          if(serverFaq.status==="published"){
+            return {...localFaq,previous:faqSnapshot(serverFaq)};
+          }
+          return localFaq;
+        }
+
+        if(localFaq.status==="approved"){
+          if(serverFaq.status==="published"){
+            shouldSync = true;
+            return {...localFaq,status:"published",updated:localFaq.updated || todayText,previous:faqSnapshot(serverFaq)};
+          }
+          shouldSync = true;
+          return {...localFaq,status:"published",updated:localFaq.updated || todayText};
+        }
+
+        const localIsNewer = dateScore(localFaq.updated) >= dateScore(serverFaq.updated);
+        const localDiffers = faqContentKey(localFaq) !== faqContentKey(serverFaq);
+        if(localFaq.status==="published" && localDiffers && localIsNewer){
+          shouldSync = true;
+          return localFaq;
+        }
+
+        return serverFaq;
+      });
+      state.faqs.forEach(localFaq=>{
+        if(!serverIds.has(localFaq.id)){
+          merged.unshift(localFaq);
+        }
+      });
+      return {faqs:merged,shouldSync};
+    }
+    function repairPreviousSnapshots(){
+      let repaired = false;
+      state.faqs.forEach(faq=>{
+        const baseline = publishedBaselines.get(faq.id);
+        if(!baseline || !["draft","pending","approved"].includes(faq.status)){
+          return;
+        }
+        const currentPreviousKey = faq.previous ? faqContentKey(faq.previous) : "";
+        const baselineKey = faqContentKey(baseline);
+        if(currentPreviousKey !== baselineKey){
+          faq.previous = faqSnapshot(baseline);
+          repaired = true;
+        }
+      });
+      if(repaired){
+        persist({sync:false});
+      }
+    }
+    async function syncFaqsToServer(options = {}){
+      if(!HAS_DYNAMIC_API){
+        if(options.toast){
+          showToast("已儲存在此瀏覽器","GitHub Pages 為靜態網站，後台變更只會保存在目前瀏覽器；若要公開給其他人，需重新上傳題庫檔。");
+        }
+        return false;
+      }
+      try{
+        const currentPayload = await requestJson(API_FAQS_URL+"?format=full").catch(()=>({faqs:[]}));
+        const serverFaqs = Array.isArray(currentPayload.faqs) ? currentPayload.faqs : Array.isArray(currentPayload.items) ? currentPayload.items : [];
+        const publishedById = new Map(
+          serverFaqs
+            .filter(faq=>faq.status==="published")
+            .map(faq=>[faq.id,faq])
+        );
+        state.faqs.forEach(faq=>{
+          if(faq.status==="published"){
+            const publishedFaq = faqSnapshot(faq);
+            publishedFaq.status = "published";
+            delete publishedFaq.previous;
+            publishedById.set(publishedFaq.id,publishedFaq);
+          }
+        });
+        const faqs = Array.from(publishedById.values());
+        const payload = await requestJson(API_FAQS_URL,{
+          method:"PUT",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({faqs})
+        });
+        if(options.toast){
+          showToast("已同步至前台資料源","data/faqs.json 已更新 "+payload.count+" 筆 FAQ，前台將讀取已發布內容。");
+        }
+        return true;
+      }catch(error){
+        if(options.toast){
+          showToast("尚未同步至前台資料檔","請確認本機 server 正在執行，並透過 http://localhost:3000/admin.html 開啟後台。");
+        }
+        return false;
+      }
+    }
+    function syncResultToast(synced, actionLabel){
+      if(synced){
+        showToast("前台資料已更新","前台約 5 秒內會顯示"+actionLabel+"後答案。");
+      }else if(HAS_DYNAMIC_API){
+        showToast("尚未同步至前台資料檔","請確認本機 server 正在執行，並透過 http://localhost:3000/admin.html 開啟後台。");
+      }else{
+        showToast("已儲存在此瀏覽器","GitHub Pages 為靜態網站；同一瀏覽器開前台可看到變更，但公開連結的其他訪客不會自動更新。");
+      }
+    }
+    function persist(options = {}){
+      try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }catch(error){}
+      if(options.sync === true){
+        syncFaqsToServer({toast:Boolean(options.toastSync)});
+      }
+    }
+    function statusTag(status){
+      const item = STATUS[status] || STATUS.draft;
+      return '<span class="tag '+item.cls+'">'+item.label+'</span>';
+    }
+    function nowStamp(){
+      const date = new Date();
+      const pad = n => String(n).padStart(2,"0");
+      return date.getFullYear()+"-"+pad(date.getMonth()+1)+"-"+pad(date.getDate())+" "+pad(date.getHours())+":"+pad(date.getMinutes());
+    }
+    function addAudit(action,target,user){
+      state.audit.unshift({time:nowStamp(),user:user || "Stanley（Demo）",action,target});
+      state.audit = state.audit.slice(0,30);
+    }
+    function showToast(title,text){
+      document.getElementById("toastTitle").textContent = title;
+      document.getElementById("toastText").textContent = text || "";
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toast.classList.remove("show"),3000);
+    }
+    function updateCounts(){
+      document.getElementById("navContentCount").textContent = state.faqs.length;
+      document.getElementById("navReviewCount").textContent = state.faqs.filter(f=>f.status==="pending").length;
+    }
+    function showScreen(name){
+      currentScreen = name;
+      document.querySelectorAll(".screen").forEach(screen=>screen.classList.remove("is-active"));
+      const screen = document.getElementById("screen-"+name);
+      if(screen) screen.classList.add("is-active");
+      document.querySelectorAll(".nav-btn[data-screen]").forEach(btn=>{
+        btn.classList.toggle("is-active",btn.dataset.screen===name || (name==="editor" && btn.dataset.screen==="content"));
+      });
+      document.getElementById("pageTitle").textContent = SCREEN_TITLES[name] || "AML Buddy";
+      document.getElementById("sidebar").classList.remove("is-open");
+      if(name==="dashboard") renderDashboard();
+      if(name==="content") renderFaqTable();
+      if(name==="review") renderReviewList();
+      if(name==="versions") renderVersions();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function refreshCurrentScreen(){
+      if(currentScreen==="dashboard") renderDashboard();
+      if(currentScreen==="content") renderFaqTable();
+      if(currentScreen==="review") renderReviewList();
+      if(currentScreen==="versions") renderVersions();
+      if(currentScreen==="editor" && editingId) startEditor(editingId);
+      updateCounts();
+    }
+
+    function renderDashboard(){
+      const counts = {
+        all:state.faqs.length,
+        pending:state.faqs.filter(f=>f.status==="pending").length,
+        published:state.faqs.filter(f=>f.status==="published").length,
+        review:state.faqs.filter(f=>f.nextReview && f.nextReview<="2027-08-01").length
+      };
+      document.getElementById("stats").innerHTML = [
+        ["blue","ALL","全部 FAQ",counts.all,"涵蓋企金與消金示範內容"],
+        ["orange","RV","待審內容",counts.pending,"需由 Reviewer 進行覆核"],
+        ["green","PUB","已發布",counts.published,"目前可由前台唯讀查詢"],
+        ["purple","DUE","一年內檢視",counts.review,"依下次檢視日主動提醒"]
+      ].map(item=>'<div class="stat"><div class="stat-top"><div class="stat-label">'+item[2]+'</div><div class="stat-icon '+item[0]+'">'+item[1]+'</div></div><div class="stat-value">'+item[3]+'</div><div class="stat-note">'+item[4]+'</div></div>').join("");
+      document.getElementById("recentActivity").innerHTML = state.audit.slice(0,5).map((item,index)=>
+        '<div class="activity-item"><span class="activity-dot" style="background:'+(index===0?'var(--orange-600)':'var(--green-600)')+'"></span><div class="activity-main"><strong>'+escapeHtml(item.action)+'</strong>'+escapeHtml(item.user)+' · '+escapeHtml(item.target)+'</div><div class="activity-time">'+escapeHtml(item.time.slice(5))+'</div></div>'
+      ).join("");
+      updateCounts();
+    }
+
+    function renderFaqTable(){
+      const query = document.getElementById("faqSearch").value.trim().toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+      const biz = document.getElementById("bizFilter").value;
+      const rows = state.faqs.filter(faq=>{
+        const haystack = [faq.id,faq.q.zh,faq.a.zh,faq.ref.zh,faq.category,faq.owner].join(" ").toLowerCase();
+        const bizMatches = !biz || faq.biz===biz || (biz==="企金" && faq.biz==="企金／消金") || (biz==="消金" && faq.biz==="企金／消金");
+        return (!query || haystack.includes(query)) && (!status || faq.status===status) && bizMatches;
+      });
+      document.getElementById("faqTableBody").innerHTML = rows.map(faq=>
+        '<tr>'+
+          '<td><span class="faq-id">'+escapeHtml(faq.id)+'</span></td>'+
+          '<td class="question-cell"><div class="question-text">'+escapeHtml(faq.q.zh)+'</div><div class="question-meta">'+escapeHtml(faq.aspect)+' ／ '+escapeHtml(faq.category)+' ／ '+escapeHtml(faq.version)+'</div></td>'+
+          '<td>'+escapeHtml(faq.biz)+'</td>'+
+          '<td>'+escapeHtml(faq.owner.split("｜")[0])+'</td>'+
+          '<td>'+escapeHtml(faq.updated)+'</td>'+
+          '<td>'+statusTag(faq.status)+'</td>'+
+          '<td><div class="row-actions"><button class="icon-btn" type="button" data-preview-id="'+faq.id+'" title="前台預覽">預</button>'+(faq.status==="approved"?'<button class="icon-btn" type="button" data-publish-id="'+faq.id+'" title="發布至前台">發</button>':'')+'<button class="icon-btn" type="button" data-edit-id="'+faq.id+'" title="編輯內容">編</button></div></td>'+
+        '</tr>'
+      ).join("");
+      document.getElementById("faqEmpty").classList.toggle("hidden",rows.length>0);
+      document.getElementById("faqTableBody").parentElement.classList.toggle("hidden",rows.length===0);
+      updateCounts();
+    }
+
+    function renderReviewList(){
+      const pending = state.faqs.filter(f=>f.status==="pending");
+      const canReview = ["reviewer","admin"].includes(document.getElementById("roleSelect").value);
+      document.getElementById("reviewList").innerHTML = pending.map(faq=>
+        '<article class="review-card">'+
+          '<div><div class="review-kicker">'+statusTag(faq.status)+'<span class="faq-id">'+escapeHtml(faq.id)+' · '+escapeHtml(faq.version)+'</span></div>'+
+          '<div class="review-title">'+escapeHtml(faq.q.zh)+'</div>'+
+          '<div class="review-meta"><span>'+escapeHtml(faq.biz)+'／'+escapeHtml(faq.aspect)+'／'+escapeHtml(faq.category)+'</span><span>送審人：'+escapeHtml(faq.owner.split("｜")[0])+'</span><span>更新：'+escapeHtml(faq.updated)+'</span></div></div>'+
+          '<div class="review-actions"><button class="btn btn-secondary btn-sm" type="button" data-compare-id="'+faq.id+'">檢視差異</button>'+
+          '<button class="btn btn-danger-soft btn-sm" type="button" data-return-id="'+faq.id+'" '+(canReview?'':'disabled')+'>退回</button>'+
+          '<button class="btn btn-primary btn-sm" type="button" data-approve-id="'+faq.id+'" '+(canReview?'':'disabled')+'>核准</button></div>'+
+        '</article>'
+      ).join("");
+      document.getElementById("reviewEmpty").classList.toggle("hidden",pending.length>0);
+      updateCounts();
+    }
+
+    function renderVersions(){
+      document.getElementById("versionList").innerHTML = state.versions.map((item,index)=>
+        '<div class="version-item"><div class="version-badge">'+escapeHtml(item.version)+'</div><div><div class="version-title">'+escapeHtml(item.title)+'</div><div class="version-meta">'+escapeHtml(item.meta)+'</div></div><button class="btn btn-ghost btn-sm" type="button" data-version-index="'+index+'">比較</button></div>'
+      ).join("");
+      document.getElementById("auditBody").innerHTML = state.audit.map(item=>
+        '<tr><td>'+escapeHtml(item.time)+'</td><td>'+escapeHtml(item.user)+'</td><td>'+escapeHtml(item.action)+'</td><td>'+escapeHtml(item.target)+'</td></tr>'
+      ).join("");
+    }
+
+    function nextFaqId(biz){
+      const prefix = biz==="消金" ? "FAQ-CON-" : "FAQ-COR-";
+      const nums = state.faqs.filter(f=>f.id.startsWith(prefix)).map(f=>Number(f.id.slice(-3))).filter(Number.isFinite);
+      return prefix+String((Math.max(0,...nums)+1)).padStart(3,"0");
+    }
+    function getField(id){ return document.getElementById(id).value.trim(); }
+    function setField(id,value){ document.getElementById(id).value = value || ""; }
+
+    function startEditor(id){
+      editingId = id || null;
+      const faq = id ? state.faqs.find(f=>f.id===id) : {
+        biz:"企金",aspect:"法規面",category:"KYC/CDD",owner:"王小明｜AML 政策科",
+        status:"draft",version:"v0.1",updated:"",effective:todayText,nextReview:"2027-07-27",
+        q:{zh:"",en:"",ja:""},a:{zh:"",en:"",ja:""},ref:{zh:"",en:"",ja:""},
+        source:"",article:"",link:""
+      };
+      if(!faq) return;
+      document.getElementById("editorTitle").textContent = id ? "編輯 FAQ" : "新增 FAQ";
+      document.getElementById("editorSub").textContent = id ? faq.id+"｜"+STATUS[faq.status].label+"｜"+faq.version : "建立問題、答案與法規引用，完成後送交覆核。";
+      setField("editBiz",faq.biz);setField("editAspect",faq.aspect);setField("editCategory",faq.category);setField("editOwner",faq.owner);
+      setField("editEffective",faq.effective);setField("editReview",faq.nextReview);
+      ["zh","en","ja"].forEach(lang=>{
+        setField("editQ"+lang,faq.q[lang]);setField("editA"+lang,faq.a[lang]);setField("editR"+lang,faq.ref[lang]);
+      });
+      setField("editSource",faq.source);setField("editArticle",faq.article);setField("editLink",faq.link);
+      document.getElementById("editIdLabel").textContent = faq.id || "新增後產生";
+      document.getElementById("editVersionLabel").textContent = faq.version;
+      document.getElementById("editUpdatedLabel").textContent = faq.updated || "尚未儲存";
+      renderStatusTrack(faq.status);
+      document.getElementById("submitReviewBtn").disabled = faq.status==="pending" || faq.status==="approved" || faq.status==="published";
+      showScreen("editor");
+    }
+
+    function renderStatusTrack(status){
+      const order = ["draft","pending","approved","published"];
+      const current = Math.max(0,order.indexOf(status));
+      document.getElementById("statusTrack").innerHTML = order.map((step,index)=>
+        '<div class="track-step '+(index<current?'done':index===current?'current':'')+'"><div class="track-dot">'+(index<current?'?':index+1)+'</div><div><div class="track-name">'+STATUS[step].label+'</div><div class="track-note">'+(["內容建立與編輯","等待獨立覆核","內容已獲核准","前台正式顯示"][index])+'</div></div></div>'
+      ).join("");
+    }
+
+    function collectEditor(statusOverride){
+      const biz = getField("editBiz");
+      const existing = editingId ? state.faqs.find(f=>f.id===editingId) : null;
+      return {
+        id:existing ? existing.id : nextFaqId(biz),
+        biz,aspect:getField("editAspect"),category:getField("editCategory"),owner:getField("editOwner"),
+        status:statusOverride || (existing ? existing.status : "draft"),
+        version:existing ? existing.version : "v0.1",
+        updated:todayText,effective:getField("editEffective"),nextReview:getField("editReview"),
+        q:{zh:getField("editQzh"),en:getField("editQen"),ja:getField("editQja")},
+        a:{zh:getField("editAzh"),en:getField("editAen"),ja:getField("editAja")},
+        ref:{zh:getField("editRzh"),en:getField("editRen"),ja:getField("editRja")},
+        source:getField("editSource"),article:getField("editArticle"),link:getField("editLink")
+      };
+    }
+    function validateFaq(faq){
+      const missing = [];
+      if(!faq.owner) missing.push("內容負責人");
+      if(!faq.q.zh) missing.push("中文問題");
+      if(!faq.a.zh) missing.push("中文答案");
+      if(!faq.ref.zh) missing.push("中文引用文字");
+      if(!faq.source) missing.push("來源文件");
+      if(!faq.article) missing.push("條次／章節");
+      if(!faq.nextReview) missing.push("下次檢視日");
+      return missing;
+    }
+    function saveEditor(sendReview){
+      const faq = collectEditor(sendReview ? "pending" : "draft");
+      const missing = validateFaq(faq);
+      if(missing.length){
+        showToast("尚有必填欄位","請補充："+missing.join("、"));
+        return;
+      }
+      const index = state.faqs.findIndex(f=>f.id===faq.id);
+      const existing = index>=0 ? state.faqs[index] : null;
+      const seedPrevious = faqSnapshot(findSeedFaq(faq.id));
+      const existingPrevious = existing && ["published","approved"].includes(existing.status) ? faqSnapshot(existing) : null;
+      const serverPrevious = publishedBaselines.get(faq.id);
+      const previous = existingPrevious || serverPrevious || existing?.previous || seedPrevious;
+      if(previous && (sendReview || existing)){
+        faq.previous = previous;
+      }
+      if(index>=0) state.faqs[index] = faq; else state.faqs.unshift(faq);
+      editingId = faq.id;
+      addAudit(sendReview?"送交覆核":"儲存草稿",faq.id+" "+faq.version);
+      if(sendReview){
+        state.versions.unshift({
+          version:faq.version,
+          title:faq.q.zh+"—送交覆核",
+          meta:faq.id+"｜"+todayText+"｜待審",
+          faqId:faq.id,
+          previous:faq.previous ? faqSnapshot(faq.previous) : null,
+          current:faqSnapshot(faq)
+        });
+      }
+      persist();
+      showToast(sendReview?"已送交覆核":"草稿已儲存",sendReview?"內容已進入 Reviewer 待審佇列；前台僅顯示已發布內容。":"後台資料已更新；發布後前台會顯示。");
+      updateCounts();
+      if(sendReview) showScreen("review"); else startEditor(faq.id);
+    }
+
+    function openModal(title,body,foot,wide){
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").innerHTML = body;
+      document.getElementById("modalFoot").innerHTML = foot || '<button class="btn btn-secondary" type="button" data-action="close-modal">關閉</button>';
+      document.getElementById("modalBox").classList.toggle("wide",Boolean(wide));
+      const layer = document.getElementById("modalLayer");
+      layer.classList.add("is-open");layer.setAttribute("aria-hidden","false");
+    }
+    function closeModal(){
+      const layer = document.getElementById("modalLayer");
+      layer.classList.remove("is-open");layer.setAttribute("aria-hidden","true");
+    }
+    function previewFaq(faq){
+      if(!faq) return;
+      openModal("前台顯示預覽",
+        '<div class="preview-frame"><div class="preview-top"><div class="preview-brand">AML Buddy｜使用者前台</div></div>'+
+        '<div class="preview-content"><aside class="preview-nav"><div class="preview-nav-title">問題分類</div><div class="preview-nav-item">'+escapeHtml(faq.biz)+'</div><div class="preview-nav-item">'+escapeHtml(faq.aspect)+'</div><div class="preview-nav-item active">'+escapeHtml(faq.category)+'</div></aside>'+
+        '<div class="preview-answer"><div class="preview-status">APPROVED KNOWLEDGE PREVIEW</div><h3 class="preview-question">'+escapeHtml(faq.q.zh || "尚未輸入問題")+'</h3><div class="preview-answer-box">'+escapeHtml(faq.a.zh || "尚未輸入答案")+'</div><div class="preview-ref"><strong>參考來源</strong><br>'+escapeHtml(faq.ref.zh || "尚未輸入引用")+'<br><br><strong>最後修訂日期</strong><br>'+escapeHtml(faq.updated || todayText)+'</div></div></div></div>',
+        '<button class="btn btn-secondary" type="button" data-action="close-modal">關閉預覽</button>',true
+      );
+    }
+    function compareFaq(faq){
+      if(!faq) return;
+      const previous = getPreviousFaq(faq);
+      const oldText = previous?.a?.zh || "新增 FAQ，無前一版本。";
+      const newText = faq.a?.zh || "";
+      const oldClass = previous ? "diff-remove" : "";
+      const previousVersion = previous?.version ? " "+previous.version : "";
+      openModal("版本差異｜"+faq.id,
+        '<div class="compare-grid"><div class="compare-col"><div class="compare-head">前一版本'+escapeHtml(previousVersion)+'</div><div class="compare-body"><span class="'+oldClass+'">'+escapeHtml(oldText)+'</span></div></div>'+
+        '<div class="compare-col"><div class="compare-head">送審版本 '+escapeHtml(faq.version)+'</div><div class="compare-body"><span class="diff-add">'+escapeHtml(newText)+'</span></div></div></div>'+
+        '<div style="margin-top:16px;padding:13px;border-radius:10px;background:var(--surface-soft);font-size:11px;line-height:1.6"><strong>變更摘要：</strong>補充風險判斷、必要留存資訊及升級處理原則；正式發布前仍須核對引用文件版本。</div>',
+        '<button class="btn btn-secondary" type="button" data-action="close-modal">關閉</button>',true
+      );
+    }
+    function getVersionFaqId(item){
+      const source = [item?.faqId,item?.meta,item?.title].filter(Boolean).join(" ");
+      const match = source.match(/\bFAQ(?:-[A-Z]+)?-\d{3}\b/);
+      return match ? match[0] : "";
+    }
+    function versionRecordIncludes(item,keyword){
+      return String((item?.title || "")+" "+(item?.meta || "")).includes(keyword);
+    }
+    function compareVersionRecord(item){
+      if(!item) return;
+      const faqId = getVersionFaqId(item);
+      const faq = faqId ? state.faqs.find(f=>f.id===faqId) : null;
+      const title = item.version ? "版本比較｜"+item.version : "版本比較";
+
+      if(!faqId || !faq){
+        const detail = [item.title,item.meta].filter(Boolean).join("\n");
+        openModal(title,
+          '<div class="compare-grid"><div class="compare-col"><div class="compare-head">紀錄類型</div><div class="compare-body">此紀錄不是單題 FAQ，沒有前一版答案可比較。</div></div>'+
+          '<div class="compare-col"><div class="compare-head">'+escapeHtml(item.version || "版本內容")+'</div><div class="compare-body">'+escapeHtml(detail || "無版本內容。")+'</div></div></div>',
+          '<button class="btn btn-secondary" type="button" data-action="close-modal">關閉</button>',true
+        );
+        return;
+      }
+
+      const isReviewRecord = versionRecordIncludes(item,"待審") || versionRecordIncludes(item,"送交覆核");
+      const isPublishedRecord = !isReviewRecord && (versionRecordIncludes(item,"已發布") || versionRecordIncludes(item,"完成覆核") || versionRecordIncludes(item,"發布"));
+      let previous = item.previous || null;
+      let current = item.current || null;
+
+      if(!previous && isReviewRecord){
+        previous = getPreviousFaq(faq);
+      }
+      if(!current){
+        if(isPublishedRecord && faq.status!=="published"){
+          current = faq.previous || publishedBaselines.get(faqId) || faqSnapshot(findSeedFaq(faqId));
+        }else{
+          current = faqSnapshot(faq);
+        }
+      }
+
+      const oldText = previous?.a?.zh || (isPublishedRecord ? "此舊版本紀錄建立時尚未保存前一版答案快照。" : "新增 FAQ，無前一版本。");
+      const newText = current?.a?.zh || item.title || "";
+      const previousVersion = previous?.version ? " "+previous.version : "";
+      const currentVersion = current?.version || item.version || "";
+
+      openModal(title,
+        '<div class="compare-grid"><div class="compare-col"><div class="compare-head">前一版本'+escapeHtml(previousVersion)+'</div><div class="compare-body"><span class="'+(previous?'diff-remove':'')+'">'+escapeHtml(oldText)+'</span></div></div>'+
+        '<div class="compare-col"><div class="compare-head">'+escapeHtml(isPublishedRecord ? "發布版本 "+currentVersion : "送審版本 "+currentVersion)+'</div><div class="compare-body"><span class="diff-add">'+escapeHtml(newText)+'</span></div></div></div>',
+        '<button class="btn btn-secondary" type="button" data-action="close-modal">關閉</button>',true
+      );
+    }
+    async function approveFaq(id){
+      const role = document.getElementById("roleSelect").value;
+      if(!["reviewer","admin"].includes(role)){ showToast("角色權限不足","請將展示角色切換為 Reviewer 或 Administrator。"); return; }
+      const faq = state.faqs.find(f=>f.id===id);
+      if(!faq) return;
+      const previous = getPreviousFaq(faq);
+      faq.status = "published";faq.updated = todayText;
+      const current = faqSnapshot(faq);
+      delete faq.previous;
+      addAudit("核准並發布內容",faq.id+" "+faq.version,"覆核者（Demo）");
+      state.versions.unshift({
+        version:faq.version,
+        title:faq.q.zh+"—完成覆核並發布",
+        meta:faq.id+"｜"+todayText+"｜已發布",
+        faqId:faq.id,
+        previous:previous ? faqSnapshot(previous) : null,
+        current
+      });
+      persist({sync:false});
+      renderReviewList();
+      showToast("內容已核准並發布","正在同步到前台資料源。");
+      const synced = await syncFaqsToServer();
+      syncResultToast(synced,"核准");
+    }
+    function returnFaq(id){
+      const role = document.getElementById("roleSelect").value;
+      if(!["reviewer","admin"].includes(role)){ showToast("角色權限不足","請將展示角色切換為 Reviewer 或 Administrator。"); return; }
+      const faq = state.faqs.find(f=>f.id===id);
+      if(!faq) return;
+      openModal("退回內容｜"+faq.id,
+        '<div class="field"><label class="required" for="returnReason">退回原因</label><textarea class="textarea" id="returnReason">請再確認引用條次與正式內規最新版本，並補充適用情境。</textarea><div class="hint">退回原因將納入操作紀錄，Editor 可依意見修改後再次送審。</div></div>',
+        '<button class="btn btn-secondary" type="button" data-action="close-modal">取消</button><button class="btn btn-danger-soft" type="button" data-confirm-return="'+faq.id+'">確認退回</button>'
+      );
+    }
+    function confirmReturn(id){
+      const faq = state.faqs.find(f=>f.id===id);
+      if(!faq) return;
+      faq.status="draft";faq.updated=todayText;
+      addAudit("退回修改",faq.id+" "+faq.version,"覆核者（Demo）");
+      persist();closeModal();renderReviewList();showToast("內容已退回","Editor 可依覆核意見修改後再次送審。");
+    }
+    function showPermission(){
+      openModal("角色與權限",
+        '<div class="table-wrap"><table style="min-width:620px"><thead><tr><th>功能</th><th>Editor</th><th>Reviewer</th><th>Administrator</th></tr></thead><tbody>'+
+        '<tr><td>建立／修改 FAQ</td><td>?</td><td>檢視</td><td>?</td></tr>'+
+        '<tr><td>送交覆核</td><td>?</td><td>—</td><td>?</td></tr>'+
+        '<tr><td>核准／退回</td><td>—</td><td>?</td><td>?</td></tr>'+
+        '<tr><td>發布／下架</td><td>—</td><td>—</td><td>?</td></tr>'+
+        '<tr><td>角色與系統設定</td><td>—</td><td>—</td><td>?</td></tr>'+
+        '</tbody></table></div><div style="margin-top:14px;padding:13px;border-radius:10px;background:var(--yellow-100);font-size:11px;line-height:1.6">Maker–Checker 原則：內容建立者不得核准自己建立的 FAQ；正式系統應以公司 SSO 身分與後端權限強制執行。</div>',
+        '<button class="btn btn-secondary" type="button" data-action="close-modal">關閉</button>',true
+      );
+    }
+    function resetDemo(){
+      openModal("重設示範資料",
+        '<p style="font-size:13px;line-height:1.7;margin:0">這會清除你在本機 Demo 中新增或修改的 FAQ，並恢復初始示範內容。此操作不影響任何行內系統。</p>',
+        '<button class="btn btn-secondary" type="button" data-action="close-modal">取消</button><button class="btn btn-danger-soft" type="button" data-action="confirm-reset">確認重設</button>'
+      );
+    }
+    function confirmReset(){
+      state=clone(seedData);persist();closeModal();renderDashboard();showScreen("dashboard");showToast("示範資料已重設","已恢復最初的 FAQ、版本與操作紀錄。");
+    }
+    async function publishFaq(id){
+      const role = document.getElementById("roleSelect").value;
+      if(role!=="admin"){ showToast("角色權限不足","正式發布僅限 Administrator。"); return; }
+      const faq=state.faqs.find(f=>f.id===id);
+      if(!faq || faq.status!=="approved") return;
+      const previous = getPreviousFaq(faq);
+      faq.status="published";faq.updated=todayText;
+      const current = faqSnapshot(faq);
+      delete faq.previous;
+      addAudit("發布內容",faq.id+" "+faq.version,"系統管理者（Demo）");
+      state.versions.unshift({
+        version:faq.version,
+        title:faq.q.zh+"—發布內容",
+        meta:faq.id+"｜"+todayText+"｜已發布",
+        faqId:faq.id,
+        previous:previous ? faqSnapshot(previous) : null,
+        current
+      });
+      persist({sync:false});renderFaqTable();showToast("內容已發布","正在同步到前台資料源。");
+      const synced = await syncFaqsToServer();
+      syncResultToast(synced,"發布");
+    }
+
+    document.addEventListener("click",event=>{
+      const screenBtn=event.target.closest("[data-screen]");
+      if(screenBtn){showScreen(screenBtn.dataset.screen);return;}
+      const actionBtn=event.target.closest("[data-action]");
+      if(actionBtn){
+        const action=actionBtn.dataset.action;
+        if(action==="new-faq") startEditor();
+        if(action==="close-modal") closeModal();
+        if(action==="show-permission") showPermission();
+        if(action==="reset-demo") resetDemo();
+        if(action==="confirm-reset") confirmReset();
+        return;
+      }
+      const edit=event.target.closest("[data-edit-id]");
+      if(edit){startEditor(edit.dataset.editId);return;}
+      const preview=event.target.closest("[data-preview-id]");
+      if(preview){previewFaq(state.faqs.find(f=>f.id===preview.dataset.previewId));return;}
+      const compare=event.target.closest("[data-compare-id]");
+      if(compare){compareFaq(state.faqs.find(f=>f.id===compare.dataset.compareId));return;}
+      const approve=event.target.closest("[data-approve-id]");
+      if(approve){approveFaq(approve.dataset.approveId);return;}
+      const publish=event.target.closest("[data-publish-id]");
+      if(publish){publishFaq(publish.dataset.publishId);return;}
+      const returnBtn=event.target.closest("[data-return-id]");
+      if(returnBtn){returnFaq(returnBtn.dataset.returnId);return;}
+      const confirmReturnBtn=event.target.closest("[data-confirm-return]");
+      if(confirmReturnBtn){confirmReturn(confirmReturnBtn.dataset.confirmReturn);return;}
+      const version=event.target.closest("[data-version-index]");
+      if(version){
+        const item=state.versions[Number(version.dataset.versionIndex)];
+        compareVersionRecord(item);
+      }
+    });
+
+    document.getElementById("mobileMenu").addEventListener("click",()=>document.getElementById("sidebar").classList.toggle("is-open"));
+    document.getElementById("faqSearch").addEventListener("input",renderFaqTable);
+    document.getElementById("statusFilter").addEventListener("change",renderFaqTable);
+    document.getElementById("bizFilter").addEventListener("change",renderFaqTable);
+    document.getElementById("roleSelect").addEventListener("change",()=>{
+      if(currentScreen==="review") renderReviewList();
+      showToast("展示角色已切換",document.getElementById("roleSelect").selectedOptions[0].textContent);
+    });
+    document.querySelectorAll("[data-lang-tab]").forEach(tab=>tab.addEventListener("click",()=>{
+      document.querySelectorAll("[data-lang-tab]").forEach(t=>t.classList.toggle("is-active",t===tab));
+      document.querySelectorAll("[data-lang-panel]").forEach(panel=>panel.classList.toggle("is-active",panel.dataset.langPanel===tab.dataset.langTab));
+    }));
+    document.getElementById("saveDraftBtn").addEventListener("click",()=>saveEditor(false));
+    document.getElementById("submitReviewBtn").addEventListener("click",()=>saveEditor(true));
+    document.getElementById("previewFaqBtn").addEventListener("click",()=>previewFaq(collectEditor()));
+    document.addEventListener("keydown",event=>{if(event.key==="Escape") closeModal();});
+
+    renderDashboard();
+    loadFaqsFromServer();
+  </script>
+</body>
+</html>

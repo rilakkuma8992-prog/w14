@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AML Buddy｜API 串接測試</title>
+  <style>
+    :root{
+      --ink:#182633;
+      --muted:#657483;
+      --line:#dbe4eb;
+      --surface:#fff;
+      --page:#eef3f7;
+      --green:#23794c;
+      --green-dark:#155f3a;
+      --yellow:#fff7d6;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      background:var(--page);
+      font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .shell{
+      width:min(1040px,calc(100% - 32px));
+      margin:0 auto;
+      padding:28px 0;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .mark{
+      width:42px;
+      height:42px;
+      border-radius:8px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      background:linear-gradient(145deg,var(--green),#52ba7f);
+      font-weight:900;
+    }
+    h1{
+      margin:0;
+      font-size:24px;
+      line-height:1.3;
+    }
+    .sub{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .link-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .link{
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:var(--surface);
+      color:var(--green-dark);
+      padding:9px 12px;
+      text-decoration:none;
+      font-size:13px;
+      font-weight:700;
+    }
+    .panel{
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:var(--surface);
+      box-shadow:0 12px 28px rgba(8,37,68,.08);
+      overflow:hidden;
+    }
+    .panel-head{
+      padding:18px;
+      border-bottom:1px solid var(--line);
+      background:#f7fafc;
+    }
+    .panel-title{
+      margin:0;
+      font-size:18px;
+    }
+    .panel-body{
+      padding:18px;
+    }
+    .controls{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:10px;
+      align-items:center;
+    }
+    input,select,button{
+      height:42px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      font:inherit;
+    }
+    input,select{
+      padding:0 12px;
+      background:#fff;
+    }
+    button{
+      padding:0 16px;
+      border-color:transparent;
+      color:#fff;
+      background:linear-gradient(145deg,var(--green),var(--green-dark));
+      font-weight:800;
+      cursor:pointer;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+    .chip{
+      height:34px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      color:var(--ink);
+      padding:0 12px;
+      font-size:13px;
+      font-weight:700;
+    }
+    .status{
+      margin-top:14px;
+      padding:12px;
+      border-radius:8px;
+      background:var(--yellow);
+      color:#6b520f;
+      font-size:13px;
+      line-height:1.6;
+    }
+    .results{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+    .result{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:14px;
+      background:#fff;
+    }
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:8px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .question{
+      margin:0 0 8px;
+      color:var(--green-dark);
+      font-size:16px;
+      line-height:1.5;
+    }
+    .answer,.ref{
+      margin:0;
+      font-size:14px;
+      line-height:1.75;
+    }
+    .ref{
+      margin-top:10px;
+      color:var(--muted);
+    }
+    code{
+      border-radius:6px;
+      background:#edf3f8;
+      padding:2px 6px;
+      font-family:Consolas,"Courier New",monospace;
+    }
+    @media (max-width:720px){
+      .topbar,.controls{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+      .link-row{justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">AML</div>
+        <div>
+          <h1>AML Buddy API 串接測試</h1>
+          <p class="sub">前端頁面與後端 API 由同一個伺服器提供，所以直接呼叫 <code>/api/aml-check</code>。</p>
+        </div>
+      </div>
+      <nav class="link-row" aria-label="頁面連結">
+        <a class="link" href="./index.html">前台</a>
+        <a class="link" href="./admin.html">後台</a>
+        <a class="link" href="./api/health">API Health</a>
+      </nav>
+    </header>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">同網域 API 查詢</h2>
+      </div>
+      <div class="panel-body">
+        <form class="controls" id="searchForm">
+          <input id="queryInput" name="query" type="search" value="KYC" aria-label="查詢關鍵字">
+          <select id="langSelect" name="lang" aria-label="語言">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+          </select>
+          <button type="submit">查詢 API</button>
+        </form>
+        <div class="chips" aria-label="快速查詢">
+          <button class="chip" type="button" data-query="KYC">KYC</button>
+          <button class="chip" type="button" data-query="實質受益人">實質受益人</button>
+          <button class="chip" type="button" data-query="制裁">制裁</button>
+          <button class="chip" type="button" data-query="匯款">匯款</button>
+        </div>
+        <div class="status" id="statusBox">等待查詢。</div>
+        <div class="results" id="results"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("searchForm");
+    const input = document.getElementById("queryInput");
+    const lang = document.getElementById("langSelect");
+    const statusBox = document.getElementById("statusBox");
+    const results = document.getElementById("results");
+
+    function escapeHtml(value){
+      return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+    }
+
+    async function runSearch(){
+      const query = input.value.trim();
+      statusBox.textContent = "呼叫 /api/aml-check 中...";
+      results.innerHTML = "";
+
+      try{
+        const params = new URLSearchParams({
+          q:query,
+          lang:lang.value,
+          status:"published"
+        });
+        const response = await fetch(`/api/aml-check?${params.toString()}`);
+        const data = await response.json();
+        statusBox.innerHTML = `API 回應成功：查詢 <code>${escapeHtml(data.query || "(空白)")}</code>，共 ${data.count} 筆。`;
+        results.innerHTML = data.items.map(item => `
+          <article class="result">
+            <div class="meta">
+              <span>${escapeHtml(item.id)}</span>
+              <span>${escapeHtml(item.biz)}</span>
+              <span>${escapeHtml(item.category)}</span>
+              <span>${escapeHtml(item.version)}</span>
+            </div>
+            <h3 class="question">${escapeHtml(item.question)}</h3>
+            <p class="answer">${escapeHtml(item.answer)}</p>
+            <p class="ref">依據：${escapeHtml(item.reference)}</p>
+          </article>
+        `).join("") || "<p>沒有找到符合的已發布 FAQ。</p>";
+      }catch(error){
+        statusBox.textContent = "API 呼叫失敗。請確認目前是從 http://localhost:3000/api-demo.html 開啟，而不是 file://。";
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      runSearch();
+    });
+
+    document.querySelectorAll("[data-query]").forEach(button => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.query;
+        runSearch();
+      });
+    });
+
+    runSearch();
+  </script>
+</body>
+</html>
